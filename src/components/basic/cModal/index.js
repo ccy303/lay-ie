@@ -1,18 +1,23 @@
-import React, { useEffect, useImperativeHandle } from "react";
-import { useLocalObservable, Observer, observer } from "mobx-react-lite";
-import { makeAutoObservable } from "mobx";
-import ReactDOM from "react-dom/client";
+import React from "react";
+import { useLocalStore, Observer, observer } from "mobx-react-lite";
+import { observable } from "mobx";
+import ReactDOM from "react-dom";
 import { Modal } from "antd";
 
-const store = {
-  visible: {},
-};
-
-makeAutoObservable(store);
+const store = observable(
+  {
+    visible: {},
+  },
+  {},
+  { deep: true }
+);
 
 const CModal = (props) => {
   const { children, name = Object.keys(store.visible).length + 1, onOk = () => {}, onCancel = () => {}, ...arg } = props;
-  store.visible[name] = false;
+  store.visible = {
+    ...store.visible,
+    [name]: false,
+  };
   const cancel = async () => {
     await onCancel();
     store.visible[name] = false;
@@ -25,11 +30,13 @@ const CModal = (props) => {
 
   return (
     <Observer>
-      {() => (
-        <Modal visible={store.visible[name]} onCancel={cancel} onOk={ok} {...arg}>
-          {props.children}
-        </Modal>
-      )}
+      {() => {
+        return (
+          <Modal visible={store.visible[name]} onCancel={cancel} onOk={ok} {...arg}>
+            {props.children}
+          </Modal>
+        );
+      }}
     </Observer>
   );
 };
@@ -56,7 +63,7 @@ CModal.confirm = (props) => {
   const dom = document.createElement("div");
   document.body.appendChild(dom);
   const Confirm = () => {
-    const store = useLocalObservable(() => ({
+    const store = useLocalStore(() => ({
       visible: true,
     }));
     const cancel = async () => {
@@ -85,8 +92,7 @@ CModal.confirm = (props) => {
       </Observer>
     );
   };
-  const root = ReactDOM.createRoot(dom);
-  root.render(<Confirm />);
+  ReactDOM.render(<Confirm />, dom);
 };
 
 export const useCModal = () => {

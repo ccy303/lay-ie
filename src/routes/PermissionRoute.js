@@ -4,7 +4,7 @@ import gStore from "@src/store/global";
 import { getUser } from "@src/http/public";
 import NoMatch from "@base/noMatch";
 import { checkAuth, getActiveRoute, findRoute } from "@utils/index";
-import { useLocalObservable, Observer } from "mobx-react-lite";
+import { useLocalStore, Observer } from "mobx-react-lite";
 import { HashRouter, Routes, Route, useNavigate, Outlet, useLocation, Navigate } from "react-router-dom";
 const renderRoute = (routes) => {
   return (
@@ -74,7 +74,7 @@ const PermissionRoute = (props) => {
 };
 
 const Main = () => {
-  const store = useLocalObservable(() => ({
+  const store = useLocalStore(() => ({
     state: false,
   }));
   const location = useLocation();
@@ -83,9 +83,9 @@ const Main = () => {
     (async () => {
       try {
         const res = await getUser();
-        store.state = true;
         gStore.g_userInfo = res.userInfo;
         gStore.g_userAuth = res.auth;
+        store.state = true;
         location.pathname === "/" && navigate("home");
       } catch (err) {
         store.state = true;

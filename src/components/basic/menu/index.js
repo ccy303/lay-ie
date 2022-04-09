@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useLocalObservable, observer } from "mobx-react-lite";
+import { useLocalStore, observer, Observer, use } from "mobx-react-lite";
 import { Menu } from "antd";
 import routes from "@src/routes";
 import { checkAuth, getActiveRoute } from "@utils/index";
@@ -17,19 +17,19 @@ const getOpenKeys = (path) => {
   return out;
 };
 
-const MenuCom = observer((props) => {
+const MenuCom = (props) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { targetRoute } = props;
   const { g_userAuth, g_userInfo } = props.gStore;
-  const store = useLocalObservable(() => ({
+  const store = useLocalStore(() => ({
     menus: [],
     openKeys: getOpenKeys(location.pathname),
-    activeKeys: [`${getActiveRoute(targetRoute, location.pathname)?.path}`],
+    activeKeys: "",
   }));
 
   useEffect(() => {
-    store.activeKeys = [`${getActiveRoute(targetRoute, location.pathname)?.path}`];
+    store.activeKeys = `${getActiveRoute(targetRoute, location.pathname)?.path}`;
   }, [location]);
 
   const getMenu = (routes, menu = [], path = "") => {
@@ -94,19 +94,26 @@ const MenuCom = observer((props) => {
   }, []);
 
   return (
-    <Menu
-      mode="inline"
-      onClick={(e) => {
-        store.activeKeys = [e.key];
+    <Observer>
+      {() => {
+        return (
+          <Menu
+            mode="inline"
+            onClick={(e) => {
+              store.activeKeys = e.key;
+            }}
+            defaultOpenKeys={store.openKeys}
+            defaultSelectedKeys={[store.activeKeys]}
+            selectedKeys={[store.activeKeys]}
+            openKeys={store.openKeys}
+            onOpenChange={onOpenChange}
+          >
+            {renderMenu(store.menus)}
+          </Menu>
+        );
       }}
-      defaultOpenKeys={store.openKeys}
-      selectedKeys={store.activeKeys}
-      openKeys={store.openKeys}
-      onOpenChange={onOpenChange}
-    >
-      {renderMenu(store.menus)}
-    </Menu>
+    </Observer>
   );
-});
+};
 
 export default MenuCom;

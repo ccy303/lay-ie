@@ -9,7 +9,6 @@ module.exports = function (api) {
           ie: 11,
         },
         useBuiltIns: "usage",
-        modules: false,
         corejs: { version: 3.8, proposals: true },
       },
     ],
@@ -26,7 +25,7 @@ module.exports = function (api) {
   ];
   const ignore = [
     (filename) => {
-      return !/^(((?!node_modules).)*(js|jsx|ts|tsx))/.test(filename);
+      return !/^(((?!node_modules).)*(js|jsx|ts|tsx))|(.*(node_modules).*(react.*|webpack.*|antd.*).*(\.js)$)/.test(filename);
       // return !/^(((?!node_modules).)*(js|jsx|ts|tsx))|(.*(node_modules).*().*(\.js)$)/.test(filename);
     },
   ];

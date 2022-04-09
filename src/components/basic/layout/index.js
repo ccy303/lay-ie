@@ -3,7 +3,7 @@ import Header from "../header";
 import Menu from "../menu";
 import { Layout, Breadcrumb } from "antd";
 import { Outlet, useLocation, Link } from "react-router-dom";
-import { Observer, useLocalObservable } from "mobx-react-lite";
+import { Observer, useLocalStore } from "mobx-react-lite";
 import { getBread, getActiveRoute } from "@utils/index";
 import style from "./styles.less";
 
@@ -24,7 +24,7 @@ const BreadcrumbLink = (props) => {
 
 const LayoutUI = (props) => {
   const { targetRoute } = props;
-  const store = useLocalObservable(() => ({
+  const store = useLocalStore(() => ({
     breadcrumb: [],
   }));
   const location = useLocation();

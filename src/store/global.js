@@ -1,11 +1,5 @@
-import { makeAutoObservable } from "mobx";
-class Global {
-  constructor() {
-    makeAutoObservable(this, {}, { deep: false });
-  }
-
-  g_userInfo = null;
-  g_userAuth = [];
-}
-
-export default new Global();
+import { observable } from "mobx";
+export default observable({
+  g_userInfo: null,
+  g_userAuth: [],
+});
