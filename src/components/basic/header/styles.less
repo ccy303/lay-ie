@@ -1,0 +1,32 @@
+.warp {
+  height: calc(@header-height - 4px);
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.08);
+  .left {
+    display: flex;
+    margin-left: 20px;
+    align-items: center;
+    .title {
+      font-weight: 700;
+      color: #333;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+    }
+    .logo {
+      margin-right: 10px;
+    }
+  }
+  .right {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    .exit {
+      color: #333;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0;
+      margin-left: 30px;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+# compiled output
+/dist
+
+# dependencies
+/node_modules
+
+**/.DS_Store
+.vscode
+
+# modules_lock
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+/.idea
+caih-cloud-ui.iml
+
+# eslint缓存
+/.eslintcache
+
+decode.js
+
+.log

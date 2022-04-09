@@ -1,0 +1,17 @@
+.warp {
+  display: flex;
+  height: 100%;
+  .header {
+    height: @header-height;
+    background-color: @header-bgcolor;
+    padding: 0;
+  }
+  .content {
+    flex: 1;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), no-repeat url(~@src/images/bg.gif);
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
