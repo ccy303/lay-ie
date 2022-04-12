@@ -1,23 +1,71 @@
 import React from "react";
-import { Form, Row, Col, Button } from "antd";
+import { Form, Row, Col, Button, DatePicker } from "antd";
 import FormInt from "./formInt";
-import "./index.less";
+import style from "./index.less";
+
+const holderFun = (type, text) => {
+	if (type == "rangeDataPicker") {
+		return ["开始日期", "结束日期"];
+	}
+	return `请${
+		{
+			text: "输入",
+			select: "选择",
+		}[type]
+	}${text}`;
+};
+
+const RenderFormItem = (cfg) => {
+	const { type, props, dom, itmeArr, ...other } = cfg;
+	if (dom) {
+		return <div>{cfg.dom}</div>;
+	}
+
+	const Com = FormInt[type];
+
+	// if (type == "rangeDataPicker") {
+	// 	console.log(1);
+	// 	other.getValueFromEvent = (...args) => {
+	// 		console.log(123, args);
+	// 		return { aa: 123, bbb: 12 };
+	// 	};
+	// }
+
+	if (itmeArr) {
+		console.log(other);
+		return (
+			<Col span={Math.floor(24 / itmeArr.length)}>
+				<Form.Item {...other}>
+					<Com
+						{...{
+							allowClear: true,
+							placeholder: holderFun(type, cfg.label),
+							...props,
+						}}
+					/>
+				</Form.Item>
+			</Col>
+		);
+	}
+
+	return (
+		<Form.Item {...other}>
+			<Com
+				{...{
+					allowClear: true,
+					placeholder: holderFun(type, cfg.label),
+					...props,
+				}}
+			/>
+		</Form.Item>
+	);
+};
+
 const FormItemArr = (arr) => {
 	return (
 		<>
-			{arr.map((colItem, colIIndex) => {
-				if (colItem.dom) {
-					return <div key={colIIndex}>{colItem.dom}</div>;
-				}
-				const { type, props, ...other } = colItem;
-				const Com = FormInt[type];
-				return (
-					<Col key={colIIndex} span={Math.floor(24 / arr.length)}>
-						<Form.Item name={colItem.name} {...other}>
-							<Com {...props} />
-						</Form.Item>
-					</Col>
-				);
+			{arr.map((colItem, idx) => {
+				return <RenderFormItem key={idx} itmeArr={arr} {...colItem} />;
 			})}
 		</>
 	);
@@ -27,28 +75,22 @@ const CForm = (props) => {
 	const { items, submitBtn = true, ...other } = props;
 	return (
 		<Form style={{ width: "100%" }} {...other}>
-			{items.map((item, itemIndex) => {
+			<Form.Item name={["startTime", "endTime"]}>
+				<DatePicker.RangePicker />
+			</Form.Item>
+			{/* {items.map((item, idx) => {
 				if (Array.isArray(item)) {
 					return (
-						<Row key={itemIndex} gutter={32}>
+						<Row key={idx} gutter={32}>
 							{FormItemArr(item)}
 						</Row>
 					);
 				}
-				if (item.dom) {
-					return <div key={itemIndex}>{item.dom}</div>;
-				}
-				const { type, props, ...other } = item;
-				const Com = FormInt[type];
-				return (
-					<Form.Item key={itemIndex} {...other}>
-						<Com {...props} />
-					</Form.Item>
-				);
-			})}
+				return <RenderFormItem key={idx} {...item} />;
+			})} */}
 			{submitBtn && (
 				<Form.Item>
-					<div styleName="submit-btn-warp">
+					<div className={style["submit-btn-warp"]}>
 						<Button type="primary" htmlType="submit">
 							提交
 						</Button>

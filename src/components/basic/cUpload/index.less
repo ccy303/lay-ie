@@ -1,26 +1,20 @@
 .upload {
 	display: flex;
-	flex-direction: row-reverse;
+	flex-direction: row;
 	align-items: center;
 
-	div[class*="ant-upload-list-text"] {
-		display: flex;
-		flex-direction: column;
-	}
-	&-picture-btn {
-		display: flex;
-		align-items: center;
-		flex-direction: column;
-		&-icon {
-			font-size: 20px;
+	div[class*="ant-upload-list-text-container"] {
+		div[class*="ant-upload-list-item"] {
+			margin: 0;
 		}
 	}
 }
 
-.over-write-style {
-	* {
-		margin: 0;
-		display: flex;
-		align-items: center;
+.max-count {
+	div[class*="ant-upload-select-text"] {
+		display: none;
+	}
+	div[class*="ant-upload-select-picture-card"] {
+		display: none;
 	}
 }

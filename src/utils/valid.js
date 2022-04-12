@@ -12,7 +12,7 @@ const conpare = async (conditions, msg) => {
  */
 class File {
 	checkSize(file, size) {
-		return conpare(file.size > 50 * 1024 * 1024, "文件大小超过限制");
+		return conpare(file.size > size * 1024 * 1024, "文件大小超过限制");
 	}
 }
 
