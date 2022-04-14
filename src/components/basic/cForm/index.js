@@ -1,7 +1,12 @@
 import React from "react";
 import { Form, Row, Col, Button, DatePicker } from "antd";
 import FormInt from "./formInt";
+import { observable } from "mobx";
 import style from "./index.less";
+
+const formStore = observable({
+	forms: {},
+});
 
 const holderFun = (type, text) => {
 	if (type == "rangeDataPicker") {
@@ -15,79 +20,58 @@ const holderFun = (type, text) => {
 	}${text}`;
 };
 
-const RenderFormItem = (cfg) => {
-	const { type, props, dom, itmeArr, ...other } = cfg;
+const FormItem = (cfg) => {
+	const { type, props, dom, colLength, _form, ...other } = cfg;
 	if (dom) {
-		return <div>{cfg.dom}</div>;
+		return <div>{dom}</div>;
 	}
 
 	const Com = FormInt[type];
 
-	// if (type == "rangeDataPicker") {
-	// 	console.log(1);
-	// 	other.getValueFromEvent = (...args) => {
-	// 		console.log(123, args);
-	// 		return { aa: 123, bbb: 12 };
-	// 	};
-	// }
-
-	if (itmeArr) {
-		console.log(other);
-		return (
-			<Col span={Math.floor(24 / itmeArr.length)}>
-				<Form.Item {...other}>
-					<Com
-						{...{
-							allowClear: true,
-							placeholder: holderFun(type, cfg.label),
-							...props,
-						}}
-					/>
-				</Form.Item>
-			</Col>
-		);
-	}
-
-	return (
+	const Item = () => (
 		<Form.Item {...other}>
 			<Com
 				{...{
 					allowClear: true,
 					placeholder: holderFun(type, cfg.label),
+					_form,
 					...props,
 				}}
 			/>
 		</Form.Item>
 	);
-};
 
-const FormItemArr = (arr) => {
 	return (
 		<>
-			{arr.map((colItem, idx) => {
-				return <RenderFormItem key={idx} itmeArr={arr} {...colItem} />;
-			})}
+			{colLength ? (
+				<Col span={Math.floor(24 / colLength)}>
+					<Item />
+				</Col>
+			) : (
+				<Item />
+			)}
 		</>
 	);
 };
 
 const CForm = (props) => {
-	const { items, submitBtn = true, ...other } = props;
+	const { items, submitBtn = true, cForm = Object.keys(formStore.forms).length, ...other } = props;
+	const [form] = Form.useForm();
+	formStore.forms[cForm] = form;
 	return (
-		<Form style={{ width: "100%" }} {...other}>
-			<Form.Item name={["startTime", "endTime"]}>
-				<DatePicker.RangePicker />
-			</Form.Item>
-			{/* {items.map((item, idx) => {
+		<Form style={{ width: "100%" }} form={form} {...other}>
+			{items.map((item, idx) => {
 				if (Array.isArray(item)) {
 					return (
 						<Row key={idx} gutter={32}>
-							{FormItemArr(item)}
+							{item.map((colItem, index) => {
+								return <FormItem key={index} {...colItem} _form={form} colLength={item.length} />;
+							})}
 						</Row>
 					);
 				}
-				return <RenderFormItem key={idx} {...item} />;
-			})} */}
+				return <FormItem key={idx} {...item} _form={form} />;
+			})}
 			{submitBtn && (
 				<Form.Item>
 					<div className={style["submit-btn-warp"]}>
@@ -101,6 +85,6 @@ const CForm = (props) => {
 	);
 };
 
-CForm.useForm = Form.useForm;
+CForm.useForm = () => formStore.forms;
 
 export default CForm;

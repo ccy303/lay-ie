@@ -49,65 +49,68 @@ export default (props) => {
 		store.fileList2 = [...store.fileList2.filter((v) => v.uid != file.uid)];
 	};
 
-	const [form] = CForm.useForm();
+	const form = CForm.useForm();
+
 	const cfg = {
-		form: form,
+		cForm: "form1",
 		// submitBtn: false,
+		initialValues: {
+			name1: "123",
+			name2: 1,
+			date: ["2022-01-02", "2022-01-03"],
+			radio: 1,
+		},
 		onFinish: () => {
-			console.log(form.getFieldsValue());
-			// CModal.confirm({
-			// 	title: "提示",
-			// 	content: <>点击了表单提交，提交信息为:{JSON.stringify(form.getFieldsValue())}</>,
-			// });
+			console.log(form["form1"].getFieldsValue());
 		},
 		items: [
 			{
 				dom: <h4 style={{ marginBottom: "10px" }}>这是一个普通的自定义dom元素</h4>,
 			},
 			[
-				// {
-				// 	name: "name1",
-				// 	label: "文本",
-				// 	type: "text",
-				// 	rules: [{ required: true }],
-				// },
-				// {
-				// 	name: "name2",
-				// 	label: "下拉",
-				// 	type: "select",
-				// 	rules: [{ required: true }],
-				// 	props: {
-				// 		options: [
-				// 			{ label: "供应商", value: 1 },
-				// 			{ label: "金融机构", value: 2 },
-				// 		],
-				// 	},
-				// },
 				{
-					name: ["startTime", "endTime"],
+					name: "name1",
+					label: "文本",
+					type: "text",
+					rules: [{ required: true }],
+				},
+				{
+					name: "name2",
+					label: "下拉",
+					type: "select",
+					rules: [{ required: true }],
+					props: {
+						options: [
+							{ label: "供应商", value: 1 },
+							{ label: "金融机构", value: 2 },
+						],
+					},
+				},
+				{
+					name: "date",
 					label: "日期范围选择器",
 					type: "rangeDataPicker",
 				},
 			],
-			// [
-			//   {
-			//     name: "comp_type3",
-			//     label: "单选框",
-			//     type: "radio",
-			//     props: {
-			//       options: [
-			//         {
-			//           label: "供应商",
-			//           value: 1,
-			//         },
-			//         {
-			//           label: "金融机构",
-			//           value: 2,
-			//         },
-			//       ],
-			//     },
-			//   },
-			// ],
+			[
+				{
+					name: "radio",
+					label: "单选框",
+					type: "radio",
+					props: {
+						options: [
+							{
+								label: "供应商",
+								value: 1,
+							},
+							{
+								label: "金融机构",
+								value: 2,
+							},
+						],
+					},
+				},
+			],
 		],
 	};
 
@@ -144,23 +147,6 @@ export default (props) => {
 					<CForm {...cfg} />
 				</Panel>
 			</Collapse>
-			{/* <Descriptions title="CUpload">
-				<Descriptions.Item>
-					<div>
-						<CUpload />
-					</div>
-				</Descriptions.Item>
-				<Descriptions.Item>
-					<div>
-						<CUpload listType="picture-card" maxCount={1} />
-					</div>
-				</Descriptions.Item>
-			</Descriptions>
-			<Descriptions title="CForm：在不破环antd表单支持情况下实现的配置式表单设置">
-				<Descriptions.Item>
-					<CForm {...cfg} />
-				</Descriptions.Item>
-			</Descriptions> */}
 			<CModal name="m1" title="普通弹框">
 				这是个普通弹框1
 			</CModal>
