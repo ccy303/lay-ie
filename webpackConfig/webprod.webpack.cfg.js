@@ -7,7 +7,10 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-
+const handler = (percentage, message, ...args) => {
+	// e.g. Output each progress message directly to the console:
+	console.info(`${(percentage * 100).toFixed(2)}%`, message, ...args);
+};
 module.exports = {
 	mode: "production",
 	entry: {
@@ -109,11 +112,12 @@ module.exports = {
 			"@src": path.resolve(__dirname, "../", "src"),
 			"@base": path.resolve(__dirname, "../src/components/basic"),
 			"@utils": path.resolve(__dirname, "../src/utils"),
-      "@images": path.resolve(__dirname, "../src/images"),
+			"@images": path.resolve(__dirname, "../src/images"),
 		},
 	},
 	plugins: [
 		// new BundleAnalyzerPlugin(),
+		new webpack.ProgressPlugin(handler),
 		new HtmlWebpackPlugin({
 			template: "./public/template.html",
 			filename: "index.html",
@@ -123,9 +127,6 @@ module.exports = {
 		new MiniCssExtractPlugin({
 			filename: "css/[name].[contenthash].css",
 			chunkFilename: "css/[name].[contenthash].css",
-		}),
-		new webpack.DefinePlugin({
-			NODE_ENV: JSON.stringify("production"),
 		}),
 	],
 	optimization: {
