@@ -50,9 +50,9 @@ const routes = [
 					},
 					{
 						path: "/page2",
-						title: "二级路由2",
+						title: "获取图片边缘色调",
 						menu: true,
-						component: load(() => import("../components/business/page2")),
+						component: load(() => import("../components/business/imageColor")),
 					},
 				],
 			},
