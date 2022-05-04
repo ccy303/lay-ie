@@ -24,5 +24,5 @@ cfg_main.plugins.push(
 );
 const compiler_main = wep(cfg_main);
 const _devServer_main = new devServer(cfg_main.devServer, compiler_main);
-new Worker(path.resolve("./server/request.js"));
+// new Worker(path.resolve("./server/request.js"));
 _devServer_main.start();

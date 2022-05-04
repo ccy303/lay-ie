@@ -14,6 +14,11 @@ const traverseApp = () => {
                 path.node.attributes = [t.jsxAttribute(t.jsxIdentifier("DESIGN"), t.jsxExpressionContainer(t.booleanLiteral(true)))];
             }
         },
+        ImportDeclaration: (_path) => {
+            if (_path.node.specifiers[0]?.local.name == "PermissionRoute") {
+                _path.node.source.value = path.resolve("./src/routes/PermissionRoute");
+            }
+        },
     });
     fs.writeFileSync(path.resolve("./server/.code/src/App.js"), generator(ast).code);
 };
@@ -35,7 +40,11 @@ module.exports = () => {
     if (!fs.existsSync(path.resolve("./server/.code/src"))) {
         fs.mkdirSync(path.resolve("./server/.code/src"), { recursive: true });
     }
-    fs.copySync(path.resolve("./src"), path.resolve("./server/.code/src"));
+    // fs.copySync(path.resolve("./src"), path.resolve("./server/.code/src"));
+    fs.copySync(path.resolve("./src/index.js"), path.resolve("./server/.code/src/index.js"));
+    fs.copySync(path.resolve("./src/App.js"), path.resolve("./server/.code/src/App.js"));
+    fs.copySync(path.resolve("./src/app.less"), path.resolve("./server/.code/src/app.less"));
+    // fs.copySync(path.resolve("./src/routes"), path.resolve("./server/.code/src/routes"));
 
     // 处理js
     traverseApp();

@@ -29,7 +29,7 @@ const holderFun = (type, text) => {
 const FormItem = (cfg) => {
     const { type, props, dom, colLength, _form, ...other } = cfg;
     if (dom) {
-        return <div>{dom}</div>;
+        return <Form.Item {...other}>{dom}</Form.Item>;
     }
 
     const Com = FormInt[type];
@@ -64,14 +64,15 @@ const CForm = (props) => {
     const [form] = Form.useForm();
     formStore.forms[cForm] = form;
     return (
-        // labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}
-        <Form style={{ width: "100%" }} form={form} {...other}>
+        <Form style={{ width: "100%" }} form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }} {...other}>
             <Row gutter={20}>
                 {items.map((item, idx) => {
+                    const { colSpan } = item;
+                    delete item.span;
                     if (Array.isArray(item)) {
                         return (
                             <Col span={24} key={idx}>
-                                <Row>
+                                <Row gutter={20}>
                                     {item.map((colItem, index) => {
                                         return <FormItem key={index} {...colItem} _form={form} colLength={item.length} />;
                                     })}
@@ -80,7 +81,16 @@ const CForm = (props) => {
                         );
                     }
                     return (
-                        <Col key={idx} xs={12} lg={8} xxl={6}>
+                        <Col
+                            key={idx}
+                            {...(colSpan
+                                ? colSpan
+                                : {
+                                      xs: 12,
+                                      lg: 8,
+                                      xxl: 6,
+                                  })}
+                        >
                             <FormItem {...item} _form={form} />
                         </Col>
                     );
@@ -100,5 +110,8 @@ const CForm = (props) => {
 };
 
 CForm.useForm = () => formStore.forms;
+
+CForm.List = Form.List;
+CForm.Item = Form.Item;
 
 export default CForm;

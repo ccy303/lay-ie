@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useLocalStore, observer, Observer, use } from "mobx-react-lite";
+import { useLocalStore, Observer } from "mobx-react-lite";
 import { Menu } from "antd";
 import routes from "@src/routes";
 import { checkAuth, getActiveRoute } from "@utils/index";
 import { PlusCircleTwoTone } from "@ant-design/icons";
-import { AddRouter } from "../design";
+import { AddRouter, pageEdit } from "../design";
 import style from "./styles.less";
 const { SubMenu } = Menu;
 
@@ -31,9 +31,13 @@ const MenuCom = (props) => {
         activeKeys: "",
     }));
 
-    const handle = async (e, key) => {
+    const routeHandle = async (e, key) => {
         e.preventDefault();
         AddRouter();
+    };
+
+    const pageHandle = async (key) => {
+        pageEdit(key);
     };
 
     useEffect(() => {
@@ -48,18 +52,33 @@ const MenuCom = (props) => {
             if (!design && route.logined && !g_userInfo) {
                 return;
             }
-            if (route.menu) {
+
+            if (design) {
                 const menuITem = {
                     path: `${path}${route.path}`,
                     title: route.title,
+                    origin: route.path,
                 };
                 if (route.children?.length) {
                     menuITem.children = [];
                     getMenu(route.children, menuITem.children, menuITem.path);
                 }
                 menu.push(menuITem);
-            } else if (route.children?.length) {
-                getMenu(route.children, menu, route.path);
+            } else {
+                if (route.menu) {
+                    const menuITem = {
+                        path: `${path}${route.path}`,
+                        title: route.title,
+                        origin: route.path,
+                    };
+                    if (route.children?.length) {
+                        menuITem.children = [];
+                        getMenu(route.children, menuITem.children, menuITem.path);
+                    }
+                    menu.push(menuITem);
+                } else if (route.children?.length) {
+                    getMenu(route.children, menu, route.path);
+                }
             }
         });
         return menu;
@@ -82,7 +101,7 @@ const MenuCom = (props) => {
                             {renderMenu(item.children)}
                             {design && (
                                 <Menu.Item key={item.title}>
-                                    <a className={style["add-router"]} onClick={(e) => handle(e, item.title)}>
+                                    <a className={style["add-router"]} onClick={(e) => routeHandle(e, item.title)}>
                                         <PlusCircleTwoTone style={{ marginRight: "5px" }} />
                                         添加路由
                                     </a>
@@ -90,17 +109,22 @@ const MenuCom = (props) => {
                             )}
                         </SubMenu>
                     ) : (
-                        <>
-                            <Menu.Item key={item.path}>
-                                <a
-                                    onClick={() => {
-                                        linkTo(item.path);
-                                    }}
-                                >
-                                    <span>{item.title}</span>
-                                </a>
-                            </Menu.Item>
-                        </>
+                        <Menu.Item key={item.path}>
+                            <a
+                                onClick={() => {
+                                    linkTo(item.path);
+                                }}
+                            >
+                                <span className={style["link"]}>
+                                    {item.title}
+                                    {design && (
+                                        <span className={style["edit"]} onClick={() => pageHandle(item.origin)}>
+                                            编辑
+                                        </span>
+                                    )}
+                                </span>
+                            </a>
+                        </Menu.Item>
                     );
                 })}
             </>
@@ -129,7 +153,7 @@ const MenuCom = (props) => {
                         {renderMenu(store.menus)}
                         {design && (
                             <Menu.Item key="root">
-                                <a onClick={(e) => handle(e, "root")} className={style["add-router"]}>
+                                <a onClick={(e) => routeHandle(e, "root")} className={style["add-router"]}>
                                     <PlusCircleTwoTone style={{ marginRight: "5px" }} />
                                     添加路由
                                 </a>
