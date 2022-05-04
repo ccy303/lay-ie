@@ -1,5 +1,5 @@
 import React from "react";
-import CForm from "@base/CForm";
+import CForm from "@base/cForm";
 import { Collapse } from "antd";
 const { Panel } = Collapse;
 
