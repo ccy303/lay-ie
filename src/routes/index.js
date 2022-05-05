@@ -140,5 +140,4 @@ const format = (route, reset = { logined: false }) => {
 	return _route;
 };
 
-
 export default routes.map((v) => format(v));

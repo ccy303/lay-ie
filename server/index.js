@@ -27,9 +27,11 @@ cfg_main.entry.app = [path.resolve("./server/.code/source/index.js")];
 const compiler_main = wep(cfg_main);
 
 compiler_main.hooks.compilation.tap("watchRun", (com) => {
-	com.hooks.processAssets.tap({ name: "watchRun", stage: compiler_main.PROCESS_ASSETS_STAGE_SUMMARIZE }, (assets) => {
-		console.log(assets);
-	});
+    com.hooks.buildModule.tap("watchRun", (module) => {
+        if (module.context == path.resolve("./src/routes")) {
+            console.log(1, module.context);
+        }
+    });
 });
 
 const _devServer_main = new devServer(cfg_main.devServer, compiler_main);

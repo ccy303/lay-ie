@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "webpack-dev-server --config ./webpackConfig/webdev.webpack.cfg.js",
-		"start": "node ./server/index.js",
+		"start": "node ./server/index.js --trace-deprecation",
 		"release": "webpack --config ./webpackConfig/webprod.webpack.cfg.js",
 		"pre-lint": "eslint src --ext .js --cache --fix"
 	},
