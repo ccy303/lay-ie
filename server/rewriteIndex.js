@@ -9,10 +9,10 @@ const prettier = require("prettier");
 const clickFun = `const handel = () => {
     CModal.confirm({
         title: "页面配置",
-        content: <div style={{ minHeight: "500px" }}>
-            <iframe width="100%" height="500px" src={'http://localhost:2325/design.html?t=' + new Date().getTime()}></iframe>
+        content: <div style={{ minHeight: "600px" }}>
+            <iframe width="100%" height="600px" src={'http://localhost:2325/design.html?t=' + new Date().getTime()}></iframe>
         </div>,
-        width: 1000,
+        width: 1200,
         onOk: () => {
             console.log(234567);
         },

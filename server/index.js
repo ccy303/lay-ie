@@ -12,17 +12,26 @@ rewriteIndex(path.resolve(cfg.entry.app[0]));
 init();
 
 const cfg_main = copy(cfg);
+
 cfg_main.entry.app = [path.resolve("./server/.code/source/index.js")];
-cfg_main.entry.design = [path.resolve("./server/.code/src/index.js")];
-cfg_main.plugins.push(
-    new HtmlWebpackPlugin({
-        template: "./public/template.html",
-        filename: "design.html",
-        favicon: "./favicon.ico",
-        chunks: ["design"],
-    })
-);
+// cfg_main.entry.design = [path.resolve("./server/.code/src/index.js")];
+// cfg_main.plugins.push(
+//     new HtmlWebpackPlugin({
+//         template: "./public/template.html",
+//         filename: "design.html",
+//         favicon: "./favicon.ico",
+//         chunks: ["design"],
+//     })
+// );
+
 const compiler_main = wep(cfg_main);
+
+compiler_main.hooks.compilation.tap("watchRun", (com) => {
+	com.hooks.processAssets.tap({ name: "watchRun", stage: compiler_main.PROCESS_ASSETS_STAGE_SUMMARIZE }, (assets) => {
+		console.log(assets);
+	});
+});
+
 const _devServer_main = new devServer(cfg_main.devServer, compiler_main);
 // new Worker(path.resolve("./server/request.js"));
 _devServer_main.start();
