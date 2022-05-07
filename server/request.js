@@ -3,6 +3,9 @@ const url = require("url");
 const fs = require("fs");
 const path = require("path");
 const qs = require("qs");
+const template = require("@babel/template").default;
+const { astRoute, findRoute, getRouteCompName, initCode } = require("./util");
+
 http.createServer((req, res) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, Content-Type");
@@ -11,9 +14,10 @@ http.createServer((req, res) => {
 	if (req.url == "/addRouter") {
 		res.end(true);
 	}
+
 	if (url.parse(req.url).pathname == "/getComponent") {
 		const query = qs.parse(url.parse(req.url).query);
-
+		const comName = getRouteCompName(query.key);
 		let dir = fs.readdirSync(path.resolve("./src/components/basic")).filter((v) => /^c/.test(v));
 		dir = dir.map((v) => {
 			return {
@@ -22,7 +26,7 @@ http.createServer((req, res) => {
 				config: true,
 			};
 		});
-		res.end(JSON.stringify(dir));
+		res.end(JSON.stringify({ comName, dir: dir }));
 	}
 
 	if (req.method == "OPTIONS") {
@@ -37,10 +41,13 @@ http.createServer((req, res) => {
 			data += chunk;
 		});
 		req.on("end", () => {
-			data = decodeURI(data);
-			console.log(data);
+			data = JSON.parse(decodeURI(data));
+			astRoute(data.key, {
+				component: template.ast(`load(() => import("../components/business/${data.coms.fileName}"))`).expression,
+			});
+			initCode(data.coms, data.coms.fileName);
 			// 处理文件
-			res.end(data);
+			res.end("ok");
 		});
 	}
 }).listen(2326);

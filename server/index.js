@@ -7,6 +7,7 @@ const cfg = require("../webpackConfig/webdev.webpack.cfg");
 const rewriteIndex = require("./rewriteIndex");
 const init = require("./init");
 const { Worker } = require("worker_threads");
+
 rewriteIndex(path.resolve(cfg.entry.app[0]));
 
 init();
@@ -14,25 +15,17 @@ init();
 const cfg_main = copy(cfg);
 
 cfg_main.entry.app = [path.resolve("./server/.code/source/index.js")];
-// cfg_main.entry.design = [path.resolve("./server/.code/src/index.js")];
-// cfg_main.plugins.push(
-//     new HtmlWebpackPlugin({
-//         template: "./public/template.html",
-//         filename: "design.html",
-//         favicon: "./favicon.ico",
-//         chunks: ["design"],
-//     })
-// );
+cfg_main.entry.design = [path.resolve("./server/.code/src/index.js")];
+cfg_main.plugins.push(
+	new HtmlWebpackPlugin({
+		template: "./public/template.html",
+		filename: "design.html",
+		favicon: "./favicon.ico",
+		chunks: ["design"],
+	})
+);
 
 const compiler_main = wep(cfg_main);
-
-compiler_main.hooks.compilation.tap("watchRun", (com) => {
-    com.hooks.buildModule.tap("watchRun", (module) => {
-        if (module.context == path.resolve("./src/routes")) {
-            console.log(1, module.context);
-        }
-    });
-});
 
 const _devServer_main = new devServer(cfg_main.devServer, compiler_main);
 // new Worker(path.resolve("./server/request.js"));

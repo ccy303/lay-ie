@@ -46,7 +46,6 @@ const MenuCom = (props) => {
 
 	const getMenu = (routes, menu = [], path = "") => {
 		routes.forEach((route) => {
-			console.log(route);
 			if (!design && route.auths && !checkAuth(route.auths, g_userAuth)) {
 				return;
 			}

@@ -5,7 +5,6 @@ import style from "./styles.less";
 import qs from "qs";
 const LoginCom = (props) => {
   const { redict_uri } = qs.parse(props.location.search, { ignoreQueryPrefix: true });
-  // console.log(useLocation());
   const navigate = useNavigate();
   const onFinish = (e) => {
     props.gStore.g_userInfo = { phone: "phone****" };

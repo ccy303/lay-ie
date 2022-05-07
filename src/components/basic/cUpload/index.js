@@ -42,7 +42,6 @@ export default (props) => {
 		afterUpload(option.file);
 		if (!fileList) {
 			// maxCount && store.fileList.length < maxCount
-			console.log(store.fileList.length);
 			if (maxCount && store.fileList.length < maxCount) {
 				store.fileList = [...store.fileList, option.file];
 			} else {

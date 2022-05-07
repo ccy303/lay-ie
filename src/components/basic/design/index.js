@@ -63,12 +63,13 @@ const comCfg = (e) => {
 };
 
 const pageEdit = async (key) => {
-	const { data } = await axios.get(`http://localhost:2326/getComponent?routeId=${key}`);
+	const { data } = await axios.get(`http://localhost:2326/getComponent?key=${key}`);
 	const form = CForm.useForm();
 	const cfg = {
 		cForm: "form",
 		submitBtn: false,
 		wrapperCol: { span: 24 },
+		initialValues: { fileName: data.comName },
 		items: [
 			{
 				name: "fileName",
@@ -90,7 +91,7 @@ const pageEdit = async (key) => {
 												<CForm.Item {...field}>
 													<Select
 														style={{ width: "85%" }}
-														options={data.map((v) => ({ label: v.label, value: v.value }))}
+														options={data.dir.map((v) => ({ label: v.label, value: v.value }))}
 														placeholder="请选择组件"
 														onChange={(e) => {
 															const coms = form.form.getFieldValue("coms");
