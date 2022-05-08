@@ -2,11 +2,11 @@ import React from "react";
 import CForm from "@base/cForm";
 export default (props) => {
   const cForm_0_cfg = {
-    cForm: "123",
+    cForm: "1111",
     items: [
       {
-        label: "123",
-        name: "132",
+        label: "asd",
+        name: "asdddds",
         type: "text",
       },
     ],

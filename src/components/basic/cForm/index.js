@@ -29,7 +29,7 @@ export const holderFun = (type, text) => {
 const FormItem = cfg => {
     const { type, props, dom, colLength, _form, ...other } = cfg;
     if (dom) {
-        return <Form.Item {...other}>{dom}</Form.Item>;
+        return dom;
     }
 
     const Com = FormInt[type];
@@ -79,7 +79,7 @@ const CForm = props => {
             <Row gutter={20}>
                 {items.map((item, idx) => {
                     const { colSpan } = item;
-                    delete item.span;
+                    delete item.colSpan;
                     if (Array.isArray(item)) {
                         return (
                             <Col span={24} key={idx}>
