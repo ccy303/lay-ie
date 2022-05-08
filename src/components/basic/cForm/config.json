@@ -1,0 +1,39 @@
+{
+  "cfgs": {
+    "cForm": {
+      "type": "text",
+      "label": "表单对象",
+      "index": "cForm"
+    },
+    "items": {
+      "type": "Array",
+      "values": [{
+        "type": "text",
+        "label": "字段名",
+        "require": true,
+        "index": "label"
+      }, {
+        "type": "text",
+        "label": "字段值",
+        "require": true,
+        "index": "name"
+      }, {
+        "type": "select",
+        "label": "字段类型",
+        "require": true,
+        "index": "type",
+        "options": [
+          "text",
+          "select",
+          "radio",
+          "datePicker",
+          "rangeDataPicker",
+          "checkbox",
+          "number",
+          "rate",
+          "switch"
+        ]
+      }]
+    }
+  }
+}

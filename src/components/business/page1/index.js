@@ -1,9 +1,19 @@
 import React from "react";
-import "./index.less";
+import CForm from "@base/cForm";
 export default (props) => {
-	return (
-		<div>
-			1234567890888***
-		</div>
-	);
+  const cForm_0_cfg = {
+    cForm: "123",
+    items: [
+      {
+        label: "123",
+        name: "132",
+        type: "text",
+      },
+    ],
+  };
+  return (
+    <>
+      <CForm {...cForm_0_cfg} />
+    </>
+  );
 };

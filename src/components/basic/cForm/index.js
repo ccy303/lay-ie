@@ -5,10 +5,10 @@ import { observable } from "mobx";
 import style from "./index.less";
 
 const formStore = observable({
-    forms: {},
+    forms: {}
 });
 
-const holderFun = (type, text) => {
+export const holderFun = (type, text) => {
     if (type == "rangeDataPicker") {
         return ["开始日期", "结束日期"];
     }
@@ -21,12 +21,12 @@ const holderFun = (type, text) => {
             number: "输入",
             select: "选择",
             checkbox: "选择",
-            datePicker: "选择",
+            datePicker: "选择"
         }[type]
     }${text}`;
 };
 
-const FormItem = (cfg) => {
+const FormItem = cfg => {
     const { type, props, dom, colLength, _form, ...other } = cfg;
     if (dom) {
         return <Form.Item {...other}>{dom}</Form.Item>;
@@ -40,7 +40,7 @@ const FormItem = (cfg) => {
                     allowClear: true,
                     placeholder: holderFun(type, cfg.label),
                     _form,
-                    ...props,
+                    ...props
                 }}
             />
         </Form.Item>
@@ -59,12 +59,23 @@ const FormItem = (cfg) => {
     );
 };
 
-const CForm = (props) => {
-    const { items, submitBtn = true, cForm = Object.keys(formStore.forms).length, ...other } = props;
+const CForm = props => {
+    const {
+        items,
+        submitBtn = true,
+        cForm = Object.keys(formStore.forms).length,
+        ...other
+    } = props;
     const [form] = Form.useForm();
     formStore.forms[cForm] = form;
     return (
-        <Form style={{ width: "100%" }} form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }} {...other}>
+        <Form
+            style={{ width: "100%" }}
+            form={form}
+            labelCol={{ span: 7 }}
+            wrapperCol={{ span: 17 }}
+            {...other}
+        >
             <Row gutter={20}>
                 {items.map((item, idx) => {
                     const { colSpan } = item;
@@ -74,7 +85,14 @@ const CForm = (props) => {
                             <Col span={24} key={idx}>
                                 <Row gutter={20}>
                                     {item.map((colItem, index) => {
-                                        return <FormItem key={index} {...colItem} _form={form} colLength={item.length} />;
+                                        return (
+                                            <FormItem
+                                                key={index}
+                                                {...colItem}
+                                                _form={form}
+                                                colLength={item.length}
+                                            />
+                                        );
                                     })}
                                 </Row>
                             </Col>
@@ -88,7 +106,7 @@ const CForm = (props) => {
                                 : {
                                       xs: 12,
                                       lg: 8,
-                                      xxl: 6,
+                                      xxl: 6
                                   })}
                         >
                             <FormItem {...item} _form={form} />
@@ -98,7 +116,7 @@ const CForm = (props) => {
                 {submitBtn && (
                     <Form.Item>
                         <div className={style["submit-btn-warp"]}>
-                            <Button type="primary" htmlType="submit">
+                            <Button type='primary' htmlType='submit'>
                                 提交
                             </Button>
                         </div>
@@ -113,5 +131,6 @@ CForm.useForm = () => formStore.forms;
 
 CForm.List = Form.List;
 CForm.Item = Form.Item;
+CForm.FormInt = FormInt;
 
 export default CForm;
