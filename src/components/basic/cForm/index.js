@@ -60,22 +60,11 @@ const FormItem = cfg => {
 };
 
 const CForm = props => {
-    const {
-        items,
-        submitBtn = true,
-        cForm = Object.keys(formStore.forms).length,
-        ...other
-    } = props;
+    const { items, submitBtn = true, cForm = Object.keys(formStore.forms).length, ...other } = props;
     const [form] = Form.useForm();
     formStore.forms[cForm] = form;
     return (
-        <Form
-            style={{ width: "100%" }}
-            form={form}
-            labelCol={{ span: 7 }}
-            wrapperCol={{ span: 17 }}
-            {...other}
-        >
+        <Form style={{ width: "100%" }} form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }} {...other}>
             <Row gutter={20}>
                 {items.map((item, idx) => {
                     const { colSpan } = item;
@@ -85,14 +74,7 @@ const CForm = props => {
                             <Col span={24} key={idx}>
                                 <Row gutter={20}>
                                     {item.map((colItem, index) => {
-                                        return (
-                                            <FormItem
-                                                key={index}
-                                                {...colItem}
-                                                _form={form}
-                                                colLength={item.length}
-                                            />
-                                        );
+                                        return <FormItem key={index} {...colItem} _form={form} colLength={item.length} />;
                                     })}
                                 </Row>
                             </Col>
@@ -106,6 +88,7 @@ const CForm = props => {
                                 : {
                                       xs: 12,
                                       lg: 8,
+                                      xl: 8,
                                       xxl: 6
                                   })}
                         >
@@ -127,10 +110,11 @@ const CForm = props => {
     );
 };
 
-CForm.useForm = () => formStore.forms;
+CForm.cUseForm = () => formStore.forms;
 
 CForm.List = Form.List;
 CForm.Item = Form.Item;
 CForm.FormInt = FormInt;
+CForm.useForm = Form.useForm;
 
 export default CForm;

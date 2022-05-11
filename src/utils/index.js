@@ -7,23 +7,23 @@ import { matchPath } from "react-router-dom";
  * @returns true/false
  */
 export const checkAuth = (check, auths) => {
-  if (!check) {
-    return true;
-  }
-  for (let i = 0; i < check.length; i++) {
-    const arr = check[i].split("&");
-    let flag = 0;
-    for (let j = 0; j < arr.length; j++) {
-      auths.includes(arr[j].trim()) && flag++;
-      if (flag == j + 1) {
+    if (!check) {
         return true;
-      }
     }
-    if (i == check.length) {
-      return false;
+    for (let i = 0; i < check.length; i++) {
+        const arr = check[i].split("&");
+        let flag = 0;
+        for (let j = 0; j < arr.length; j++) {
+            auths.includes(arr[j].trim()) && flag++;
+            if (flag == j + 1) {
+                return true;
+            }
+        }
+        if (i == check.length) {
+            return false;
+        }
     }
-  }
-  return false;
+    return false;
 };
 
 /**
@@ -34,57 +34,86 @@ export const checkAuth = (check, auths) => {
  * @returns { Object | Boolean } 查询到时返回：{path: 当前激活路径, reoute: 当前激活路由}；无结果返回：false
  */
 export const getActiveRoute = (route, path, join = "") => {
-  let out = false;
-  const _path = `${join || ""}${route.path}`;
-  if (matchPath(_path, path)) {
-    out = { path: route.activePath || _path, route };
-  } else if (route.children) {
-    for (let i = 0; i < route.children.length; i++) {
-      out = getActiveRoute(route.children[i], path, _path);
-      if (out) {
-        break;
-      }
+    let out = false;
+    const _path = `${join || ""}${route.path}`;
+    if (matchPath(_path, path)) {
+        out = { path: route.activePath || _path, route };
+    } else if (route.children) {
+        for (let i = 0; i < route.children.length; i++) {
+            out = getActiveRoute(route.children[i], path, _path);
+            if (out) {
+                break;
+            }
+        }
     }
-  }
-  return out;
+    return out;
 };
 
 export const findRoute = (routes, keys, vals) => {
-  let out = false;
-  for (let i = 0; i < routes.length; i++) {
-    if (routes[i].children) {
-      out = findRoute(routes[i].children, keys, vals);
-    } else {
-      if (Array.isArray(keys)) {
-        for (let j = 0; j < keys.length; j++) {
-          if (routes[i][keys[j]] != vals[j]) {
-            break;
-          }
-          if (j == keys.length) {
-            out = routes[i];
-          }
+    let out = false;
+    for (let i = 0; i < routes.length; i++) {
+        if (routes[i].children) {
+            out = findRoute(routes[i].children, keys, vals);
+        } else {
+            if (Array.isArray(keys)) {
+                for (let j = 0; j < keys.length; j++) {
+                    if (routes[i][keys[j]] != vals[j]) {
+                        break;
+                    }
+                    if (j == keys.length) {
+                        out = routes[i];
+                    }
+                }
+            } else if (routes[i][keys] == vals) {
+                out = routes[i];
+                break;
+            }
         }
-      } else if (routes[i][keys] == vals) {
-        out = routes[i];
-        break;
-      }
     }
-  }
-  return out;
+    return out;
 };
 
 export const getBread = (route, path, out = []) => {
-  const arr = path.split("/");
-  for (let i = 0; i < arr.length - 1; i++) {
-    const _path = arr.slice(0, i + 2).join("/");
-    if (route.breadcrumb && (route.path == _path || matchPath(route.fullPathName, _path))) {
-      out.push({ title: route.title, path: _path });
+    const arr = path.split("/");
+    for (let i = 0; i < arr.length - 1; i++) {
+        const _path = arr.slice(0, i + 2).join("/");
+        if (route.breadcrumb && (route.path == _path || matchPath(route.fullPathName, _path))) {
+            out.push({ title: route.title, path: _path });
+        }
     }
-  }
-  if (route.children) {
-    for (let i = 0; i < route.children.length; i++) {
-      getBread(route.children[i], path, out);
+    if (route.children) {
+        for (let i = 0; i < route.children.length; i++) {
+            getBread(route.children[i], path, out);
+        }
     }
-  }
-  return out;
+    return out;
+};
+
+/**
+ * 获取屏幕宽度
+ * @param {Boolean} antdGrid 是否转化为antd Grid 尺寸
+ */
+export const getClientW = antdGrid => {
+    const { offsetWidth } = document.body;
+    if (!antdGrid) {
+        return offsetWidth;
+    }
+    if (offsetWidth >= 1600) {
+        return "xxl";
+    }
+    if (offsetWidth >= 1200) {
+        return "xl";
+    }
+    if (offsetWidth >= 992) {
+        return "lg";
+    }
+    if (offsetWidth >= 768) {
+        return "md";
+    }
+    if (offsetWidth >= 576) {
+        return "sm";
+    }
+    if (offsetWidth < 576) {
+        return "xs";
+    }
 };

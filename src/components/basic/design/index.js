@@ -60,151 +60,52 @@ const AddRouter = () => {
 
 const pageEdit = async key => {
     const { data } = await axios.get(`http://localhost:2326/getComponent?key=${key}`);
-    const form = CForm.useForm();
-
-    const cfg = {
-        cForm: "pageForm",
-        submitBtn: false,
-        wrapperCol: { span: 24 },
-        initialValues: { fileName: data.comName },
-        items: [
-            {
-                name: "fileName",
-                label: "页面文件夹名称",
-                type: "text",
-                colSpan: { span: 24 },
-                rules: [{ required: true }]
-            },
-            {
-                colSpan: { span: 24 },
-                dom: (
-                    <CForm.List name='coms'>
-                        {(fields, { add, remove }) => {
-                            return (
-                                <>
-                                    {fields.map(field => {
-                                        return (
-                                            <CForm.Item
-                                                label='组件'
-                                                key={field.key}
-                                                labelCol={{ span: 7 }}
-                                                wrapperCol={{ span: 17 }}
-                                                rules={[{ required: true, message: "" }]}
-                                                {...field}
-                                            >
-                                                <Select
-                                                    style={{ width: "80%" }}
-                                                    options={data.dir.map(v => ({
-                                                        label: v.label,
-                                                        value: v.value
-                                                    }))}
-                                                    placeholder='请选择组件'
-                                                    onChange={e => {
-                                                        const coms =
-                                                            form.pageForm.getFieldValue("coms");
-                                                        coms[field.name] = e;
-                                                        form.pageForm.setFieldsValue({ coms });
-                                                    }}
-                                                />
-                                                <div
-                                                    className={style.cfg}
-                                                    onClick={() => {
-                                                        const coms =
-                                                            form.pageForm.getFieldValue("coms")[
-                                                                field?.name
-                                                            ];
-                                                        comCfg(
-                                                            coms,
-                                                            data.dir.find(v => v.value == coms)
-                                                                .config,
-                                                            field.name
-                                                        );
-                                                    }}
-                                                >
-                                                    <ToolTwoTone />
-                                                </div>
-                                                {fields.length > 1 && (
-                                                    <MinusCircleOutlined
-                                                        style={{ margin: "0 10px" }}
-                                                        onClick={() => {
-                                                            remove(field.name);
-                                                            const cfgs =
-                                                                form.pageForm.getFieldValue(
-                                                                    "cfgs"
-                                                                ) || [];
-                                                            cfgs.splice(field.name, 1);
-                                                            form.pageForm.setFieldsValue({ cfgs });
-                                                        }}
-                                                    />
-                                                )}
-                                            </CForm.Item>
-                                        );
-                                    })}
-                                    <CForm.Item>
-                                        <Button
-                                            type='dashed'
-                                            onClick={() => {
-                                                add();
-                                                const cfgs =
-                                                    form.pageForm.getFieldValue("cfgs") || [];
-                                                cfgs.push(null);
-                                                form.pageForm.setFieldsValue({ cfgs });
-                                            }}
-                                            style={{ width: "100%" }}
-                                            icon={<PlusOutlined />}
-                                        >
-                                            添加
-                                        </Button>
-                                    </CForm.Item>
-                                </>
-                            );
-                        }}
-                    </CForm.List>
-                )
-            }
-        ]
-    };
+    const form = CForm.cUseForm();
 
     const comCfg = (com, cfg, index) => {
-        if (!cfg) {
+        if (!cfg.cfgs) {
             return Message.warning("该组件无法配置");
         }
 
         const renderMultipleFormItem = ({ key, name, ...reset }, item) => {
             return (
                 <>
-                    <Col span={20}>
-                        {cfg.cfgs[item].values.map(vItm => {
-                            const FormItem = CForm.FormInt[vItm.type];
-                            const ItemProps = {
-                                key: vItm.index,
-                                ...reset,
-                                label: vItm.label,
-                                name: [name, vItm.index],
-                                labelCol: { span: 7 },
-                                wrapperCol: { span: 17 },
-                                rules: [
-                                    {
-                                        required: !!vItm.require,
-                                        message: ""
-                                    }
-                                ]
-                            };
-                            const InputProps = {
-                                placeholder: holderFun(vItm.type, vItm.label)
-                            };
-                            if (vItm.type == "select") {
-                                InputProps.options = vItm.options.map(v => ({
-                                    label: v,
-                                    value: v
-                                }));
-                            }
-                            return (
-                                <CForm.Item {...ItemProps}>
-                                    <FormItem {...InputProps} />
-                                </CForm.Item>
-                            );
-                        })}
+                    <Col span={22}>
+                        <Row gutter={8}>
+                            {cfg.cfgs[item].values.map(vItm => {
+                                const FormItem = CForm.FormInt[vItm.type];
+                                const ItemProps = {
+                                    key: vItm.index,
+                                    ...reset,
+                                    label: vItm.label,
+                                    name: [name, vItm.index],
+                                    labelCol: { span: 10 },
+                                    wrapperCol: { span: 14 },
+                                    rules: [
+                                        {
+                                            required: !!vItm.require,
+                                            message: ""
+                                        }
+                                    ]
+                                };
+                                const InputProps = {
+                                    placeholder: holderFun(vItm.type, vItm.label)
+                                };
+                                if (vItm.type == "select") {
+                                    InputProps.options = vItm.options.map(v => ({
+                                        label: v.label,
+                                        value: v.value
+                                    }));
+                                }
+                                return (
+                                    <Col span={8}>
+                                        <CForm.Item {...ItemProps}>
+                                            <FormItem {...InputProps} />
+                                        </CForm.Item>
+                                    </Col>
+                                );
+                            })}
+                        </Row>
                     </Col>
                 </>
             );
@@ -216,8 +117,8 @@ const pageEdit = async key => {
                 key: item.index,
                 label: item.label,
                 name: item.index,
-                labelCol: { span: 7 },
-                wrapperCol: { span: 17 },
+                labelCol: { span: 4 },
+                wrapperCol: { span: 8 },
                 rules: [
                     {
                         required: !!item.require,
@@ -262,22 +163,14 @@ const pageEdit = async key => {
                                                         {fields.map(field => {
                                                             return (
                                                                 <Row key={key}>
-                                                                    {renderMultipleFormItem(
-                                                                        field,
-                                                                        v,
-                                                                        remove
-                                                                    )}
-                                                                    <Col span={4}>
+                                                                    {renderMultipleFormItem(field, v, remove)}
+                                                                    <Col span={2}>
                                                                         {fields.length > 1 && (
                                                                             <MinusCircleOutlined
                                                                                 style={{
                                                                                     margin: "0 10px"
                                                                                 }}
-                                                                                onClick={() =>
-                                                                                    remove(
-                                                                                        field.name
-                                                                                    )
-                                                                                }
+                                                                                onClick={() => remove(field.name)}
                                                                             />
                                                                         )}
                                                                     </Col>
@@ -285,12 +178,7 @@ const pageEdit = async key => {
                                                             );
                                                         })}
                                                         <CForm.Item>
-                                                            <Button
-                                                                type='dashed'
-                                                                onClick={() => add()}
-                                                                style={{ width: "100%" }}
-                                                                icon={<PlusOutlined />}
-                                                            >
+                                                            <Button type='dashed' onClick={() => add()} style={{ width: "100%" }} icon={<PlusOutlined />}>
                                                                 添加
                                                             </Button>
                                                         </CForm.Item>
@@ -311,6 +199,7 @@ const pageEdit = async key => {
 
         Modal.confirm({
             title: `${com}组件配置`,
+            width: 800,
             onOk: async () => {
                 const res = await form.comCfg.validateFields();
                 const cfgs = form.pageForm.getFieldValue("cfgs") || [];
@@ -319,6 +208,89 @@ const pageEdit = async key => {
             },
             content: <CForm {...comCfg} />
         });
+    };
+
+    const cfg = {
+        cForm: "pageForm",
+        submitBtn: false,
+        wrapperCol: { span: 24 },
+        initialValues: { fileName: data.comName },
+        items: [
+            {
+                name: "fileName",
+                label: "页面文件夹名称",
+                type: "text",
+                colSpan: { span: 24 },
+                rules: [{ required: true }]
+            },
+            {
+                colSpan: { span: 24 },
+                dom: (
+                    <CForm.List name='coms'>
+                        {(fields, { add, remove }) => {
+                            return (
+                                <>
+                                    {fields.map(field => {
+                                        return (
+                                            <CForm.Item label='组件' key={field.key} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }} rules={[{ required: true, message: "" }]} {...field}>
+                                                <Select
+                                                    style={{ width: "80%" }}
+                                                    options={data.dir.map(v => ({
+                                                        label: v.label,
+                                                        value: v.value
+                                                    }))}
+                                                    placeholder='请选择组件'
+                                                    onChange={e => {
+                                                        const coms = form.pageForm.getFieldValue("coms");
+                                                        coms[field.name] = e;
+                                                        form.pageForm.setFieldsValue({ coms });
+                                                    }}
+                                                />
+                                                <div
+                                                    className={style.cfg}
+                                                    onClick={() => {
+                                                        const coms = form.pageForm.getFieldValue("coms")[field?.name];
+                                                        comCfg(coms, data.dir.find(v => v.value == coms).config, field.name);
+                                                    }}
+                                                >
+                                                    <ToolTwoTone />
+                                                </div>
+                                                {fields.length > 1 && (
+                                                    <MinusCircleOutlined
+                                                        style={{ margin: "0 10px" }}
+                                                        onClick={() => {
+                                                            remove(field.name);
+                                                            const cfgs = form.pageForm.getFieldValue("cfgs") || [];
+                                                            cfgs.splice(field.name, 1);
+                                                            form.pageForm.setFieldsValue({ cfgs });
+                                                        }}
+                                                    />
+                                                )}
+                                            </CForm.Item>
+                                        );
+                                    })}
+                                    <CForm.Item>
+                                        <Button
+                                            type='dashed'
+                                            onClick={() => {
+                                                add();
+                                                const cfgs = form.pageForm.getFieldValue("cfgs") || [];
+                                                cfgs.push(null);
+                                                form.pageForm.setFieldsValue({ cfgs });
+                                            }}
+                                            style={{ width: "100%" }}
+                                            icon={<PlusOutlined />}
+                                        >
+                                            添加
+                                        </Button>
+                                    </CForm.Item>
+                                </>
+                            );
+                        }}
+                    </CForm.List>
+                )
+            }
+        ]
     };
 
     Modal.confirm({

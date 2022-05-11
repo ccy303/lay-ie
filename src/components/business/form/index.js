@@ -168,7 +168,7 @@ export default () => {
 		],
 	};
 
-	const form = CForm.useForm();
+	const form = CForm.cUseForm();
 
 	return (
 		<div>

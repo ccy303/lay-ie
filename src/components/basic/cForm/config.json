@@ -1,39 +1,44 @@
 {
-  "cfgs": {
-    "cForm": {
-      "type": "text",
-      "label": "表单对象",
-      "index": "cForm"
-    },
-    "items": {
-      "type": "Array",
-      "values": [{
-        "type": "text",
-        "label": "字段名",
-        "require": true,
-        "index": "label"
-      }, {
-        "type": "text",
-        "label": "字段值",
-        "require": true,
-        "index": "name"
-      }, {
-        "type": "select",
-        "label": "字段类型",
-        "require": true,
-        "index": "type",
-        "options": [
-          "text",
-          "select",
-          "radio",
-          "datePicker",
-          "rangeDataPicker",
-          "checkbox",
-          "number",
-          "rate",
-          "switch"
-        ]
-      }]
+    "name": "表单",
+    "cfgs": {
+        "cForm": {
+            "type": "text",
+            "label": "表单对象",
+            "index": "cForm"
+        },
+        "items": {
+            "type": "Array",
+            "values": [
+                {
+                    "type": "text",
+                    "label": "字段名",
+                    "require": true,
+                    "index": "label"
+                },
+                {
+                    "type": "text",
+                    "label": "字段值",
+                    "require": true,
+                    "index": "name"
+                },
+                {
+                    "type": "select",
+                    "label": "字段类型",
+                    "require": true,
+                    "index": "type",
+                    "options": [
+                        { "label": "文本输入", "value": "text" },
+                        { "label": "选择器", "value": "select" },
+                        { "label": "单选框", "value": "radio" },
+                        { "label": "日趋", "value": "datePicker" },
+                        { "label": "日期范围", "value": "rangeDataPicker" },
+                        { "label": "多选框", "value": "checkbox" },
+                        { "label": "数字输入", "value": "number" },
+                        { "label": "评分", "value": "rate" },
+                        { "label": "开关", "value": "switch" }
+                    ]
+                }
+            ]
+        }
     }
-  }
 }

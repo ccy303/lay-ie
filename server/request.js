@@ -15,6 +15,22 @@ http.createServer((req, res) => {
         res.end(true);
     }
 
+    if (url.parse(req.url).pathname == "/getLost") {
+        let arr = new Array(52).fill(null);
+        arr = arr.map(v => {
+            return {
+                a: parseInt(Math.random() * 10000),
+                b: parseInt(Math.random() * 10000),
+                c: parseInt(Math.random() * 10000),
+                d: parseInt(Math.random() * 10000),
+                e: parseInt(Math.random() * 10000),
+                f: parseInt(Math.random() * 10000),
+                g: parseInt(Math.random() * 10000)
+            };
+        });
+        res.end(JSON.stringify({ data: arr, total: arr.length }));
+    }
+
     if (url.parse(req.url).pathname == "/getComponent") {
         const query = qs.parse(url.parse(req.url).query);
         const comName = getRouteCompName(query.key);
@@ -22,7 +38,7 @@ http.createServer((req, res) => {
         dir = dir.map(v => {
             const cfg = getComCfg(v);
             return {
-                label: v,
+                label: cfg?.name,
                 value: v,
                 config: cfg
             };
@@ -45,9 +61,7 @@ http.createServer((req, res) => {
             console.log(data);
             data = JSON.parse(decodeURI(data));
             astRoute(data.key, {
-                component: template.ast(
-                    `load(() => import("../components/business/${data.coms.fileName}"))`
-                ).expression
+                component: template.ast(`load(() => import("../components/business/${data.coms.fileName}"))`).expression
             });
             initCode(data.coms);
             // 处理文件

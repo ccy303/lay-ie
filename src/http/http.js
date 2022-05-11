@@ -1,10 +1,10 @@
-import axios from "axios";
+import Axios from "axios";
 import { Message } from "antd";
 
-const _axios = new axios();
+const ax = Axios.create({});
 
 // 请求拦截
-_axios.interceptors.request.use((config) => {
+ax.interceptors.request.use(config => {
     if (config.method.toLocaleLowerCase() === "get") {
         if (config.params) {
             config.params._t = new Date().getTime();
@@ -16,14 +16,14 @@ _axios.interceptors.request.use((config) => {
 });
 
 // 响应拦截
-_axios.interceptors.response.use(
-    (response) => {
+ax.interceptors.response.use(
+    response => {
         const { data } = response;
         return data;
     },
-    (err) => {
+    err => {
         return Promise.reject(err);
     }
 );
 
-export default _axios;
+export default ax;
