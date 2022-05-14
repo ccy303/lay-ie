@@ -97,13 +97,15 @@ const CForm = props => {
                     );
                 })}
                 {submitBtn && (
-                    <Form.Item>
-                        <div className={style["submit-btn-warp"]}>
-                            <Button type='primary' htmlType='submit'>
-                                提交
-                            </Button>
-                        </div>
-                    </Form.Item>
+                    <Col span={24}>
+                        <Form.Item wrapperCol={24}>
+                            <div className={style["submit-btn-warp"]}>
+                                <Button type='primary' htmlType='submit'>
+                                    提交
+                                </Button>
+                            </div>
+                        </Form.Item>
+                    </Col>
                 )}
             </Row>
         </Form>

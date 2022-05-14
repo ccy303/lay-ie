@@ -83,6 +83,7 @@ module.exports = {
 									"link-color": "#0743b0",
 									"breadcrumb-height": "30px",
 									"breadcrumb-shadow": "none",
+									"ant-prefix": "linkfin"
 								},
 								javascriptEnabled: true,
 							},
