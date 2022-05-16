@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CForm from "./../cForm";
 import { Table, Button } from "antd";
 import { useLocalStore, Observer } from "mobx-react-lite";
@@ -6,17 +6,42 @@ import { autorun } from "mobx";
 import { getClientW } from "@utils";
 import style from "./index.less";
 import axios from "@src/http/http.js";
+import { copy } from "copy-anything";
+const useTable = (table = {}) => {
+    const tableRef = useRef(table);
 
-export default props => {
-    const { search, columns = [], dataSource = [], pagination = {}, requestCfg } = props;
+    return [tableRef.current];
+};
 
+const __INTTSTORE__ = {
+    total: 0,
+    pageSize: 10,
+    page: 1,
+    data: [],
+    loading: true
+};
+
+const TableWarp = props => {
+    const { table, ...other } = props;
+    const [key, forceUpdate] = useState(parseInt(Math.random() * 100000));
+    useEffect(() => {
+        table.reload = () => {
+            forceUpdate(parseInt(Math.random() * 100000));
+        };
+    }, [table]);
+    return <TableList key={key} {...other} />;
+};
+
+const TableList = props => {
+    const { search, columns = [], dataSource = [], pagination = {}, requestCfg, ...other } = props;
     const store = useLocalStore(() => ({
-        total: dataSource.length,
-        pageSize: 10,
-        page: 1,
-        data: dataSource,
-        loading: true
+        ...__INTTSTORE__
     }));
+
+    useEffect(() => {
+        store.total = dataSource.length;
+        store.data = dataSource;
+    }, [dataSource]);
 
     const getData = async _params => {
         const params = {
@@ -54,17 +79,18 @@ export default props => {
         form.resetFields();
     };
 
-    const getBtnCol = () => {
+    const getBtnCol = search => {
+        const out = copy(search);
         const span = { xs: 12, lg: 8, xl: 8, xxl: 6 }[getClientW(true)];
         let i = 0;
-        const { items } = search;
+        const { items } = out;
         while (!Array.isArray(items[items.length - 1 - i])) {
             i++;
             if (items.length == i) {
                 break;
             }
         }
-        search.items.push({
+        out.items.push({
             colSpan: {
                 span: 24 - (i % (24 / span)) * span
             },
@@ -79,9 +105,9 @@ export default props => {
                 </div>
             )
         });
-    };
 
-    getBtnCol();
+        return out;
+    };
 
     const [form] = CForm.useForm();
 
@@ -109,7 +135,7 @@ export default props => {
                 <div>
                     {!!search && (
                         <div className={style["form-warp"]}>
-                            <CForm {...{ form, ...search }} />
+                            <CForm {...{ form, ...getBtnCol(search) }} />
                         </div>
                     )}
                     <Table
@@ -130,9 +156,14 @@ export default props => {
                             size: "default",
                             ...pagination
                         }}
+                        {...other}
                     />
                 </div>
             )}
         </Observer>
     );
 };
+
+TableWarp.useTable = useTable;
+
+export default TableWarp;

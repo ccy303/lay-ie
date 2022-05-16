@@ -16,7 +16,7 @@ http.createServer((req, res) => {
     }
 
     if (url.parse(req.url).pathname == "/getLost") {
-        let arr = new Array(52).fill(null);
+        let arr = new Array(9).fill(null);
         arr = arr.map(v => {
             return {
                 a: parseInt(Math.random() * 10000),

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import React from "react";
 import TableList from "@base/cTableList";
+import { Button } from "antd";
 export default props => {
     const cForm_0_cfg = {
         submitBtn: false,
@@ -57,6 +58,7 @@ export default props => {
         { title: "列6", dataIndex: "f" },
         { title: "列7", dataIndex: "g" }
     ];
+    const [table] = TableList.useTable();
 
     const dataSource = new Array(51).fill({
         a: "asdas",
@@ -69,7 +71,6 @@ export default props => {
     });
 
     const getData1 = async params => {
-        console.log(params);
         return { data: dataSource, total: 52 };
     };
 
@@ -79,7 +80,16 @@ export default props => {
 
     return (
         <>
+            <Button
+                onClick={() => {
+                    table.reload();
+                }}
+            >
+                点击
+            </Button>
             <TableList
+                rowKey='a'
+                table={table}
                 search={cForm_0_cfg}
                 columns={columns}
                 requestCfg={"http://localhost:2326/getLost"}
