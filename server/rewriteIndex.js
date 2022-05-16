@@ -20,7 +20,7 @@ const clickFun = `const handel = () => {
 }`;
 
 const runFun = `ReactDOM.render(
-  <ConfigProvider locale={zhCN}>
+  <ConfigProvider locale={zhCN} prefixCls='linkfin'>
       <App />
       <div
           style={{
@@ -39,14 +39,12 @@ const runFun = `ReactDOM.render(
   document.getElementById("root")
 );`;
 
-module.exports = (file) => {
+module.exports = file => {
     const wepInput = fs.readFileSync(file, "utf-8");
     const ast = parser.parse(wepInput, { sourceType: "module", plugins: ["jsx"] });
 
     // 处理配置按钮
-    ast.program.body.unshift(
-        t.importDeclaration([t.importSpecifier(t.identifier("SettingTwoTone"), t.identifier("SettingTwoTone"))], t.stringLiteral("@ant-design/icons"))
-    );
+    ast.program.body.unshift(t.importDeclaration([t.importSpecifier(t.identifier("SettingTwoTone"), t.identifier("SettingTwoTone"))], t.stringLiteral("@ant-design/icons")));
 
     ast.program.body.unshift(t.importDeclaration([t.importDefaultSpecifier(t.identifier("CModal"))], t.stringLiteral("@base/cModal")));
 
@@ -55,11 +53,11 @@ module.exports = (file) => {
     ast.program.body[ast.program.body.length - 1] = parser.parse(runFun, { sourceType: "module", plugins: ["jsx"] }).program.body[0];
 
     traverse(ast, {
-        ImportDeclaration: (_path) => {
+        ImportDeclaration: _path => {
             if (_path.node.source.value == "@src/App") {
                 _path.node.source.value = path.resolve("./src/App");
             }
-        },
+        }
     });
 
     const code = prettier.format(generator(ast).code);

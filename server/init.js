@@ -40,48 +40,11 @@ module.exports = () => {
     if (!fs.existsSync(path.resolve("./server/.code/src"))) {
         fs.mkdirSync(path.resolve("./server/.code/src"), { recursive: true });
     }
-    // fs.copySync(path.resolve("./src"), path.resolve("./server/.code/src"));
     fs.copySync(path.resolve("./src/index.js"), path.resolve("./server/.code/src/index.js"));
     fs.copySync(path.resolve("./src/App.js"), path.resolve("./server/.code/src/App.js"));
     fs.copySync(path.resolve("./src/app.less"), path.resolve("./server/.code/src/app.less"));
-    // fs.copySync(path.resolve("./src/routes"), path.resolve("./server/.code/src/routes"));
 
     // 处理js
     traverseApp();
     traverseIndex();
-
-    // const dir = fs.readdirSync(path.resolve("./src/components/basic")).filter((v) => /^c/.test(v));
-
-    // const astImport = template(`import %%name%% from %%path%%`);
-
-    // const file = t.file(t.program([]));
-    // // 依赖引入
-    // file.program.body.push(
-    //     astImport({
-    //         name: "React",
-    //         path: `react`,
-    //     })
-    // );
-
-    // for (let i = 0, _dir; (_dir = dir[i++]); ) {
-    //     file.program.body.push(
-    //         astImport({
-    //             name: _dir.replace(/^c/, ($1) => $1.toUpperCase()),
-    //             path: `@base/${_dir}`,
-    //         })
-    //     );
-    // }
-
-    // // jsx
-    // const astJsx = t.jsxElement(t.jsxOpeningElement(t.jsxIdentifier("div"), []), t.jsxClosingElement(t.jsxIdentifier("div")), []);
-
-    // // function
-    // const astFunc = t.arrowFunctionExpression([t.identifier("props")], t.blockStatement([t.returnStatement(astJsx)]));
-
-    // // export 语句
-    // const astExport = t.exportDefaultDeclaration(astFunc);
-
-    // file.program.body.push(astExport);
-
-    // console.log(generator(file).code);
 };

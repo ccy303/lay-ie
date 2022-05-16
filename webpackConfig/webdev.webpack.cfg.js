@@ -7,13 +7,13 @@ module.exports = {
     mode: "development",
     target: ["web", "es5"],
     entry: {
-        app: ["./src/index.js"],
+        app: ["./src/index.js"]
     },
     output: {
         path: path.join(__dirname, "../dist"), // 出口目录，dist文件
         publicPath: "/",
         filename: "js/[name].js",
-        chunkFilename: "js/[name].chunk.js",
+        chunkFilename: "js/[name].chunk.js"
     },
 
     devtool: "cheap-module-source-map",
@@ -21,7 +21,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                use: ["babel-loader"],
+                use: ["babel-loader"]
             },
             {
                 test: /\.css$/,
@@ -39,12 +39,12 @@ module.exports = {
                                     } else {
                                         return localName;
                                     }
-                                },
-                            },
-                        },
+                                }
+                            }
+                        }
                     },
-                    "postcss-loader",
-                ],
+                    "postcss-loader"
+                ]
             },
             {
                 test: /\.less$/,
@@ -62,9 +62,9 @@ module.exports = {
                                     } else {
                                         return localName;
                                     }
-                                },
-                            },
-                        },
+                                }
+                            }
+                        }
                     },
                     "postcss-loader",
                     {
@@ -76,27 +76,28 @@ module.exports = {
                                     "link-color": "#0743b0",
                                     "breadcrumb-height": "30px",
                                     "breadcrumb-shadow": "none",
+                                    "ant-prefix": "linkfin"
                                 },
-                                javascriptEnabled: true,
-                            },
-                        },
+                                javascriptEnabled: true
+                            }
+                        }
                     },
                     {
                         loader: "style-resources-loader",
                         options: {
-                            patterns: path.resolve(__dirname, "../src/styles/common.less"),
-                        },
-                    },
-                ],
+                            patterns: path.resolve(__dirname, "../src/styles/common.less")
+                        }
+                    }
+                ]
             },
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
                 type: "asset",
                 generator: {
-                    filename: "images/[hash][ext][query]",
-                },
-            },
-        ],
+                    filename: "images/[hash][ext][query]"
+                }
+            }
+        ]
     },
     plugins: [
         // new BundleAnalyzerPlugin()
@@ -104,10 +105,10 @@ module.exports = {
             template: "./public/template.html",
             filename: "index.html",
             favicon: "./favicon.ico",
-            chunks: ["app"],
+            chunks: ["app"]
         }),
         new CleanWebpackPlugin({ verbose: true }),
-        new ESLintPlugin({}),
+        new ESLintPlugin({})
     ],
     resolve: {
         // 自动补全后缀，注意第一个必须是空字符串,后缀一定以点开头
@@ -117,18 +118,18 @@ module.exports = {
             "@src": path.resolve(__dirname, "../src"),
             "@base": path.resolve(__dirname, "../src/components/basic"),
             "@utils": path.resolve(__dirname, "../src/utils"),
-            "@images": path.resolve(__dirname, "../src/images"),
-        },
+            "@images": path.resolve(__dirname, "../src/images")
+        }
     },
     devServer: {
         port: 2325, // 端口
         host: "localhost",
         hot: true,
         devMiddleware: {
-            writeToDisk: true,
+            writeToDisk: true
         },
         client: {
-            progress: true,
-        },
-    },
+            progress: true
+        }
+    }
 };

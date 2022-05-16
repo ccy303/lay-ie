@@ -4,9 +4,13 @@ import { ConfigProvider } from "antd";
 import zhCN from "antd/lib/locale/zh_CN";
 import App from "@src/App";
 
+ConfigProvider.config({
+    prefixCls: "linkfin"
+});
+
 ReactDOM.render(
-	<ConfigProvider locale={zhCN}>
-		<App />
-	</ConfigProvider>,
-	document.getElementById("root")
+    <ConfigProvider locale={zhCN} prefixCls='linkfin'>
+        <App />
+    </ConfigProvider>,
+    document.getElementById("root")
 );

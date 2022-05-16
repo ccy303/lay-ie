@@ -2,7 +2,8 @@ import React from "react";
 import { useLocalStore, Observer } from "mobx-react-lite";
 import { observable } from "mobx";
 import ReactDOM from "react-dom";
-import { Modal } from "antd";
+import zhCN from "antd/lib/locale/zh_CN";
+import { Modal, ConfigProvider } from "antd";
 
 const store = observable(
     {
@@ -13,17 +14,12 @@ const store = observable(
 );
 
 const CModal = props => {
-    const {
-        children,
-        name = Object.keys(store.visible).length + 1,
-        onOk = () => {},
-        onCancel = () => {},
-        ...arg
-    } = props;
+    const { children, name = Object.keys(store.visible).length + 1, onOk = () => {}, onCancel = () => {}, ...arg } = props;
     store.visible = {
         ...store.visible,
         [name]: false
     };
+
     const cancel = async () => {
         await onCancel();
         store.visible[name] = false;
@@ -55,6 +51,7 @@ CModal.acClose = target => {
     }
     store.visible[target] = false;
 };
+
 CModal.acOpen = target => {
     if (!target) {
         for (const key in store.visible) {
@@ -68,7 +65,11 @@ CModal.confirm = props => {
     const { content, onOk = () => {}, onCancel = () => {}, ...other } = props;
     const dom = document.createElement("div");
     document.body.appendChild(dom);
-    const Confirm = () => {
+
+    const Comfirm = () => {
+        const [, contextHolder] = Modal.useModal();
+        const CfgContext = React.createContext();
+
         const store = useLocalStore(() => ({
             visible: true
         }));
@@ -91,14 +92,16 @@ CModal.confirm = props => {
         return (
             <Observer>
                 {() => (
-                    <Modal visible={store.visible} onCancel={cancel} onOk={ok} {...other}>
-                        {content}
-                    </Modal>
+                    <ConfigProvider locale={zhCN} prefixCls='linkfin'>
+                        <Modal visible={store.visible} onCancel={cancel} onOk={ok} {...other}>
+                            {content}
+                        </Modal>
+                    </ConfigProvider>
                 )}
             </Observer>
         );
     };
-    ReactDOM.render(<Confirm />, dom);
+    ReactDOM.render(<Comfirm />, dom);
 };
 
 export const useCModal = () => {
