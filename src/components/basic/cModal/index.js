@@ -19,14 +19,18 @@ const CModal = props => {
         ...store.visible,
         [name]: false
     };
-
+    const localStore = useLocalStore(() => ({
+        loading: false
+    }));
     const cancel = async () => {
         await onCancel();
         store.visible[name] = false;
     };
 
     const ok = async () => {
+        localStore.loading = true;
         await onOk();
+        localStore.loading = false;
         store.visible[name] = false;
     };
 
@@ -34,7 +38,7 @@ const CModal = props => {
         <Observer>
             {() => {
                 return (
-                    <Modal visible={store.visible[name]} onCancel={cancel} onOk={ok} {...arg}>
+                    <Modal visible={store.visible[name]} confirmLoading={localStore.loading} onCancel={cancel} onOk={ok} {...arg}>
                         {props.children}
                     </Modal>
                 );
@@ -67,11 +71,9 @@ CModal.confirm = props => {
     document.body.appendChild(dom);
 
     const Comfirm = () => {
-        const [, contextHolder] = Modal.useModal();
-        const CfgContext = React.createContext();
-
         const store = useLocalStore(() => ({
-            visible: true
+            visible: true,
+            loading: false
         }));
         const cancel = async () => {
             const res = await onCancel();
@@ -82,7 +84,9 @@ CModal.confirm = props => {
             store.visible = false;
         };
         const ok = async () => {
+            store.loading = true;
             const res = await onOk();
+            store.loading = false;
             if (res === false) {
                 return;
             }
@@ -93,7 +97,7 @@ CModal.confirm = props => {
             <Observer>
                 {() => (
                     <ConfigProvider locale={zhCN} prefixCls='linkfin'>
-                        <Modal visible={store.visible} onCancel={cancel} onOk={ok} {...other}>
+                        <Modal visible={store.visible} confirmLoading={store.loading} onCancel={cancel} onOk={ok} {...other}>
                             {content}
                         </Modal>
                     </ConfigProvider>
@@ -101,6 +105,7 @@ CModal.confirm = props => {
             </Observer>
         );
     };
+
     ReactDOM.render(<Comfirm />, dom);
 };
 
