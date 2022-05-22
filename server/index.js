@@ -28,5 +28,5 @@ cfg_main.plugins.push(
 const compiler_main = wep(cfg_main);
 
 const _devServer_main = new devServer(cfg_main.devServer, compiler_main);
-exec("nodemon --watch ./server/request.js 2326");
+exec("nodemon --watch ./server/request.js ./server/request.js");
 _devServer_main.start();
