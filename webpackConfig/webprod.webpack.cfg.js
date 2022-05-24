@@ -92,7 +92,7 @@ module.exports = {
 					{
 						loader: "style-resources-loader",
 						options: {
-							patterns: path.resolve(__dirname, "../src/styles/variable.less"),
+							patterns: path.resolve(__dirname, "../src/styles/common.less"),
 						},
 					},
 				],

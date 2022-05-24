@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import CForm from "./../cForm";
 import { Table, Button } from "antd";
 import { useLocalStore, Observer } from "mobx-react-lite";
-import { autorun } from "mobx";
+import { autorun, runInAction } from "mobx";
 import { getClientW } from "@utils";
 import style from "./index.less";
 import axios from "@src/http/http.js";
@@ -22,7 +22,7 @@ const __INTTSTORE__ = {
 };
 
 const TableWarp = props => {
-    const { table, ...other } = props;
+    const { table = {}, ...other } = props;
     const [key, forceUpdate] = useState(parseInt(Math.random() * 100000));
     useEffect(() => {
         table.reload = () => {
@@ -35,7 +35,9 @@ const TableWarp = props => {
 const TableList = props => {
     const { search, columns = [], dataSource = [], pagination = {}, requestCfg, ...other } = props;
     const store = useLocalStore(() => ({
-        ...__INTTSTORE__
+        ...__INTTSTORE__,
+        pageSize: pagination.defaultPageSize || pagination.pageSize || __INTTSTORE__.pageSize,
+        page: pagination.page || pagination.page || __INTTSTORE__.page
     }));
 
     useEffect(() => {
@@ -106,6 +108,8 @@ const TableList = props => {
             )
         });
 
+        out.submitBtn = false;
+
         return out;
     };
 
@@ -150,8 +154,10 @@ const TableList = props => {
                             pageSizeOptions: [10, 20, 50],
                             showTotal: (total, range) => `共 ${total} 条数据/共 ${Math.ceil(store.total / store.pageSize)} 页`,
                             onChange: (page, pageSize) => {
-                                store.page = page;
-                                store.pageSize = pageSize;
+                                runInAction(() => {
+                                    store.page = page;
+                                    store.pageSize = pageSize;
+                                });
                             },
                             size: "default",
                             ...pagination
