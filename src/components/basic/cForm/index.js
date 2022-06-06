@@ -27,11 +27,10 @@ export const holderFun = (type, text) => {
 };
 
 const FormItem = cfg => {
-    const { type, props, dom, colLength, _form, ...other } = cfg;
+    const { type, props, dom, colLength, ...other } = cfg;
     if (dom) {
         return dom;
     }
-
     const Com = FormInt[type];
     const Item = () => (
         <Form.Item {...other}>
@@ -39,7 +38,6 @@ const FormItem = cfg => {
                 {...{
                     allowClear: true,
                     placeholder: holderFun(type, cfg.label),
-                    _form,
                     ...props
                 }}
             />
@@ -62,7 +60,9 @@ const FormItem = cfg => {
 const CForm = props => {
     const { items, submitBtn = true, cForm = Object.keys(formStore.forms).length, ...other } = props;
     const [form] = Form.useForm();
-    formStore.forms[cForm] = form;
+    if (!formStore.forms[cForm]) {
+        formStore.forms[cForm] = form;
+    }
     return (
         <Form style={{ width: "100%" }} form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }} {...other}>
             <Row gutter={20}>
@@ -74,7 +74,7 @@ const CForm = props => {
                             <Col span={24} key={idx}>
                                 <Row gutter={20}>
                                     {item.map((colItem, index) => {
-                                        return <FormItem key={index} {...colItem} _form={form} colLength={item.length} />;
+                                        return <FormItem key={index} {...colItem} colLength={item.length} />;
                                     })}
                                 </Row>
                             </Col>
@@ -92,7 +92,7 @@ const CForm = props => {
                                       xxl: 6
                                   })}
                         >
-                            <FormItem {...item} _form={form} />
+                            <FormItem {...item} />
                         </Col>
                     );
                 })}

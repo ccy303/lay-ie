@@ -1,19 +1,55 @@
 import React from "react";
 import CForm from "@base/cForm";
-export default (props) => {
-  const cForm_0_cfg = {
-    cForm: "1111",
-    items: [
-      {
-        label: "asd",
-        name: "asdddds",
-        type: "text",
-      },
-    ],
-  };
-  return (
-    <>
-      <CForm {...cForm_0_cfg} />
-    </>
-  );
+import { Spin, Button } from "antd";
+import { useLocalStore, Observer } from "mobx-react-lite";
+
+const Page = () => {
+    const form = CForm.cUseForm();
+    const store = useLocalStore(() => {
+        return {
+            loading: false
+        };
+    });
+    console.log(form);
+    return (
+        <Observer>
+            {() => {
+                console.log(12345);
+                return (
+                    <Spin spinning={store.loading}>
+                        <CForm
+                            {...{
+                                cForm: "form1",
+                                submitBtn: false,
+                                items: [
+                                    {
+                                        name: "测试",
+                                        label: "测试",
+                                        type: "text",
+                                        rules: [{ required: true }]
+                                    },
+                                    {
+                                        dom: (
+                                            <Button
+                                                onClick={async () => {
+                                                    store.loading = true;
+                                                    setTimeout(() => {
+                                                        console.log(form.form1.validateFields());
+                                                    });
+                                                }}
+                                            >
+                                                提交
+                                            </Button>
+                                        )
+                                    }
+                                ]
+                            }}
+                        />
+                    </Spin>
+                );
+            }}
+        </Observer>
+    );
 };
+
+export default Page;

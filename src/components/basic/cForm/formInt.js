@@ -3,17 +3,17 @@ import React, { useEffect } from "react";
 import { useLocalStore, Observer } from "mobx-react-lite";
 import moment from "moment";
 
-const CNumber = (props) => {
-    const { _form, onChange, value, ...other } = props;
+const CNumber = props => {
+    const { onChange, value, ...other } = props;
     const store = useLocalStore(() => ({
-        value: undefined,
+        value: undefined
     }));
 
     useEffect(() => {
         store.value = value;
     }, [value]);
 
-    const dateChange = (e) => {
+    const dateChange = e => {
         onChange?.(e);
     };
     return (
@@ -22,7 +22,7 @@ const CNumber = (props) => {
                 <InputNumber
                     {...{
                         controls: false,
-                        ...other,
+                        ...other
                     }}
                     style={{ width: "100%" }}
                     value={store.value}
@@ -33,14 +33,14 @@ const CNumber = (props) => {
     );
 };
 
-const CRangeDataPicker = (props) => {
-    const { _form, onChange, value, ...other } = props;
+const CRangeDataPicker = props => {
+    const { onChange, value, ...other } = props;
     const store = useLocalStore(() => ({
-        value: undefined,
+        value: undefined
     }));
 
     useEffect(() => {
-        store.value = value?.map((v) => {
+        store.value = value?.map(v => {
             switch (other.picker) {
                 case "week":
                     return v && moment(v.split("-")[0]).isoWeek(v.split("-")[1]);
@@ -52,22 +52,22 @@ const CRangeDataPicker = (props) => {
         });
     }, [value]);
 
-    const dateChange = (e) => {
+    const dateChange = e => {
         switch (other.picker) {
             case "week":
-                onChange?.(e.map((v) => v?.format("YYYY-WW")));
+                onChange?.(e.map(v => v?.format("YYYY-WW")));
                 break;
             case "month":
-                onChange?.(e.map((v) => v?.format("YYYY-MM")));
+                onChange?.(e.map(v => v?.format("YYYY-MM")));
                 break;
             case "year":
-                onChange?.(e.map((v) => v?.format("YYYY")));
+                onChange?.(e.map(v => v?.format("YYYY")));
                 break;
             case "quarter":
-                onChange?.(e.map((v) => v?.format("YYYY-Q")));
+                onChange?.(e.map(v => v?.format("YYYY-Q")));
                 break;
             default:
-                onChange?.(value?.format(`${other.showTime ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD 00:00:00"}`));
+                onChange?.(e.map(v => v?.format(`${other.showTime ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD 00:00:00"}`)));
         }
     };
 
@@ -77,7 +77,7 @@ const CRangeDataPicker = (props) => {
                 <DatePicker.RangePicker
                     {...{
                         allowEmpty: [true, true],
-                        ...other,
+                        ...other
                     }}
                     style={{ width: "100%" }}
                     value={store.value}
@@ -88,11 +88,11 @@ const CRangeDataPicker = (props) => {
     );
 };
 
-const CDatePicker = (props) => {
-    const { _form, onChange, value, ...other } = props;
+const CDatePicker = props => {
+    const { onChange, value, ...other } = props;
     const store = useLocalStore(() => {
         return {
-            value: undefined,
+            value: undefined
         };
     });
 
@@ -109,7 +109,7 @@ const CDatePicker = (props) => {
         })();
     }, [value]);
 
-    const dateChange = (value) => {
+    const dateChange = value => {
         switch (other.picker) {
             case "week":
                 onChange?.(value?.format("YYYY-WW"));
@@ -141,5 +141,5 @@ export default {
     checkbox: CCheckbox.Group,
     number: CNumber,
     rate: CRate,
-    switch: CSwitch,
+    switch: CSwitch
 };
