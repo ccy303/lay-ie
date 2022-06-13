@@ -2,14 +2,21 @@ import { Link } from "react-router-dom";
 import React from "react";
 import TableList from "@base/cTableList";
 import { Button } from "antd";
+import moment from "moment";
 export default props => {
     const cForm_0_cfg = {
         submitBtn: false,
+        initialValues: {
+            1321: ["2020-3", "2020-4"]
+        },
         items: [
             {
                 label: "关键词",
                 name: "1321",
-                type: "text"
+                type: "rangeDataPicker",
+                props: {
+                    picker: "quarter"
+                }
             },
             {
                 label: "关键词",
@@ -44,6 +51,11 @@ export default props => {
             {
                 label: "关键词",
                 name: "13d222",
+                type: "text"
+            },
+            {
+                label: "关键词",
+                name: "13d222s",
                 type: "text"
             }
         ]

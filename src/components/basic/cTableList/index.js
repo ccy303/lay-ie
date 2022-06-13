@@ -83,18 +83,22 @@ const TableList = props => {
 
     const getBtnCol = search => {
         const out = copy(search);
-        const span = { xs: 12, lg: 8, xl: 8, xxl: 6 }[getClientW(true)];
         let i = 0;
         const { items } = out;
+        // row 下有${i} 个 col
         while (!Array.isArray(items[items.length - 1 - i])) {
             i++;
             if (items.length == i) {
                 break;
             }
         }
+        // span:{xs: 12, lg: 8, xl: 8, xxl: 6} {24 - (i % (24 / span)) * span}
         out.items.push({
             colSpan: {
-                span: 24 - (i % (24 / span)) * span
+                xs: 24 - (i % 2) * 12,
+                lg: 24 - (i % 3) * 8,
+                xl: 24 - (i % 3) * 8,
+                xxl: 24 - (i % 4) * 6
             },
             dom: (
                 <div className={style["btn-groups"]}>
