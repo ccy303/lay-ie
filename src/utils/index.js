@@ -49,6 +49,13 @@ export const getActiveRoute = (route, path, join = "") => {
     return out;
 };
 
+/**
+ * 根据keys value 查找route
+ * @param {*} routes
+ * @param {*} keys
+ * @param {*} vals
+ * @returns
+ */
 export const findRoute = (routes, keys, vals) => {
     let out = false;
     for (let i = 0; i < routes.length; i++) {
@@ -73,6 +80,13 @@ export const findRoute = (routes, keys, vals) => {
     return out;
 };
 
+/**
+ * 获取面包屑
+ * @param {*} route
+ * @param {*} path
+ * @param {*} out
+ * @returns
+ */
 export const getBread = (route, path, out = []) => {
     const arr = path.split("/");
     for (let i = 0; i < arr.length - 1; i++) {

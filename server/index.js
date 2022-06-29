@@ -3,10 +3,11 @@ const wep = require("webpack");
 const path = require("path");
 const { copy } = require("copy-anything");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const cfg = require("../webpackConfig/webdev.webpack.cfg");
+const cfg = require("../webpackConfig/dev.webpack.cfg");
 const rewriteIndex = require("./rewriteIndex");
 const init = require("./init");
 const { exec } = require("child_process");
+const utils = require("util");
 
 rewriteIndex(path.resolve(cfg.entry.app[0]));
 
@@ -26,6 +27,10 @@ cfg_main.plugins.push(
 );
 
 const compiler_main = wep(cfg_main);
+
+compiler_main.hooks.done.tap("done", stats => {
+    console.info(`耗时：${(stats.endTime - stats.startTime) / 1000}s`);
+});
 
 const _devServer_main = new devServer(cfg_main.devServer, compiler_main);
 exec("nodemon --watch ./server/request.js ./server/request.js");

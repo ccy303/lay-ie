@@ -33,7 +33,7 @@ const TableWarp = props => {
 };
 
 const TableList = props => {
-    const { search, columns = [], dataSource = [], pagination = {}, requestCfg, ...other } = props;
+    const { showIndex = true, search, columns = [], dataSource = [], pagination = {}, requestCfg, ...other } = props;
     const store = useLocalStore(() => ({
         ...__INTTSTORE__,
         pageSize: pagination.defaultPageSize || pagination.pageSize || __INTTSTORE__.pageSize,
@@ -124,16 +124,18 @@ const TableList = props => {
         out = columns.map(v => {
             return { key: v.datadataIndex, align: "center", render: (text, record, index) => text || "-", ...v };
         });
-        out = [
-            {
-                title: "序号",
-                align: "center",
-                render: (text, record, index) => {
-                    return ++index + (store.page - 1) * store.pageSize;
-                }
-            },
-            ...out
-        ];
+        if (showIndex) {
+            out = [
+                {
+                    title: "序号",
+                    align: "center",
+                    render: (text, record, index) => {
+                        return ++index + (store.page - 1) * store.pageSize;
+                    }
+                },
+                ...out
+            ];
+        }
         return out;
     };
 
