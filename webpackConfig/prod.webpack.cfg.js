@@ -141,7 +141,7 @@ module.exports = {
             new TerserPlugin({
                 parallel: true
             }),
-            new CompressionPlugin()
+            // new CompressionPlugin()
         ],
         splitChunks: {
             chunks: "all"
