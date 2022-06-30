@@ -4,14 +4,28 @@ const path = require("path");
 const { copy } = require("copy-anything");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const cfg = require("../webpackConfig/dev.webpack.cfg");
-const rewriteIndex = require("./rewriteIndex");
-const init = require("./init");
+const fs = require("fs-extra");
+// const init = require("./init");
 const { exec } = require("child_process");
-const utils = require("util");
+const utils = require("./util");
 
-rewriteIndex(path.resolve(cfg.entry.app[0]));
+utils.injectIndex(path.resolve(cfg.entry.app[0]));
 
-init();
+(() => {
+    // 复制文件
+    if (!fs.existsSync(path.resolve("./server/.code/src"))) {
+        fs.mkdirSync(path.resolve("./server/.code/src"), { recursive: true });
+    }
+    fs.copySync(path.resolve("./src/index.js"), path.resolve("./server/.code/src/index.js"));
+    fs.copySync(path.resolve("./src/App.js"), path.resolve("./server/.code/src/App.js"));
+    fs.copySync(path.resolve("./src/app.less"), path.resolve("./server/.code/src/app.less"));
+
+    // 处理js
+    utils.traverseApp();
+    utils.traverseIndex();
+})();
+
+// init();
 
 const cfg_main = copy(cfg);
 
