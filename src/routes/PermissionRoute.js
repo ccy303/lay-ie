@@ -92,7 +92,6 @@ const Main = props => {
     }));
     const location = useLocation();
     const navigate = useNavigate();
-    console.log(cfg.rootPath);
     useEffect(() => {
         (async () => {
             try {

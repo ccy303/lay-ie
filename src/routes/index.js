@@ -20,6 +20,7 @@ const routes = [
         path: "/admin",
         logined: true,
         layout: Layout,
+        breadcrumb: false,
         children: [
             {
                 path: "/one",
@@ -55,7 +56,6 @@ const routes = [
                 title: "二级路由集合",
                 menu: true,
                 path: "/singlePage",
-                breadcrumb: false,
                 logined: true,
                 children: [
                     {
@@ -76,7 +76,6 @@ const routes = [
                 path: "/multistage",
                 title: "三级路由集合",
                 menu: true,
-                breadcrumb: false,
                 logined: true,
                 children: [
                     {
@@ -142,7 +141,7 @@ const format = (
     }
 ) => {
     const _route = {
-        breadcrumb: !!route.component,
+        breadcrumb: { breadcrumb: true, disabled: !route.component },
         ...reset,
         ...route,
         fullPathName: `${reset.fullPathName || ""}${route.path}`,

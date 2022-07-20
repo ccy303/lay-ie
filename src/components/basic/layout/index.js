@@ -8,7 +8,7 @@ import { getBread, getActiveRoute } from "@utils/index";
 import style from "./styles.less";
 
 const BreadcrumbLink = props => {
-    const { path, title, target } = props.breadcrumb;
+    const { path, title, target, disabled } = props.breadcrumb;
     if (/^http/.test(path)) {
         return (
             <a href={path} target={target}>
@@ -16,7 +16,7 @@ const BreadcrumbLink = props => {
             </a>
         );
     }
-    if (!path) {
+    if (!path || disabled) {
         return <>{title}</>;
     }
     return <Link to={path}>{title}</Link>;
@@ -28,10 +28,12 @@ const LayoutUI = props => {
         breadcrumb: []
     }));
     const location = useLocation();
+
     useEffect(() => {
         const custom = getActiveRoute(targetRoute, location.pathname)?.route?.breadcrumb;
         store.breadcrumb = Array.isArray(custom) ? custom : getBread(targetRoute, location.pathname);
     }, [location]);
+
     return (
         <Layout className={style.warp}>
             <Layout.Header className={style.header}>

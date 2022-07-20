@@ -83,7 +83,9 @@ module.exports = {
                                         modifyVars: {
                                             "primary-color": "#d7000f",
                                             "link-color": "#d7000f",
-                                            "ant-prefix": "linkfin"
+                                            "ant-prefix": "linkfin",
+                                            "menu-inline-toplevel-item-height": "48px",
+                                            "menu-item-height": "48px"
                                         },
                                         javascriptEnabled: true
                                     }

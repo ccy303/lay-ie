@@ -88,11 +88,13 @@ export const findRoute = (routes, keys, vals) => {
  * @returns
  */
 export const getBread = (route, path, out = []) => {
+    // eslint-disable-next-line
+    // debugger;
     const arr = path.split("/");
     for (let i = 0; i < arr.length - 1; i++) {
         const _path = arr.slice(0, i + 2).join("/");
         if (route.breadcrumb && (route.path == _path || matchPath(route.fullPathName, _path))) {
-            out.push({ title: route.title, path: _path });
+            out.push({ title: route.title, path: _path, disabled: route.breadcrumb?.disabled });
         }
     }
     if (route.children) {

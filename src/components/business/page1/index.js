@@ -10,11 +10,9 @@ const Page = () => {
             loading: false
         };
     });
-    console.log(form);
     return (
         <Observer>
             {() => {
-                console.log(12345);
                 return (
                     <Spin spinning={store.loading}>
                         <CForm
