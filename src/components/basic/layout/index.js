@@ -7,7 +7,7 @@ import { Observer, useLocalStore } from "mobx-react-lite";
 import { getBread, getActiveRoute } from "@utils/index";
 import style from "./styles.less";
 
-const BreadcrumbLink = (props) => {
+const BreadcrumbLink = props => {
     const { path, title, target } = props.breadcrumb;
     if (/^http/.test(path)) {
         return (
@@ -22,10 +22,10 @@ const BreadcrumbLink = (props) => {
     return <Link to={path}>{title}</Link>;
 };
 
-const LayoutUI = (props) => {
+const LayoutUI = props => {
     const { targetRoute } = props;
     const store = useLocalStore(() => ({
-        breadcrumb: [],
+        breadcrumb: []
     }));
     const location = useLocation();
     useEffect(() => {
@@ -46,7 +46,7 @@ const LayoutUI = (props) => {
                         <Observer>
                             {() => (
                                 <Breadcrumb>
-                                    {store.breadcrumb.map((v) => {
+                                    {store.breadcrumb.map(v => {
                                         return (
                                             <Breadcrumb.Item key={v.title}>
                                                 <BreadcrumbLink breadcrumb={v} />

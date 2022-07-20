@@ -81,10 +81,8 @@ module.exports = {
                                 options: {
                                     lessOptions: {
                                         modifyVars: {
-                                            "primary-color": "#0743b0",
-                                            "link-color": "#0743b0",
-                                            "breadcrumb-height": "30px",
-                                            "breadcrumb-shadow": "none",
+                                            "primary-color": "#d7000f",
+                                            "link-color": "#d7000f",
                                             "ant-prefix": "linkfin"
                                         },
                                         javascriptEnabled: true
@@ -140,7 +138,7 @@ module.exports = {
             new CssMinimizerPlugin(),
             new TerserPlugin({
                 parallel: true
-            }),
+            })
             // new CompressionPlugin()
         ],
         splitChunks: {

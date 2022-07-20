@@ -77,11 +77,11 @@ module.exports = {
                                 options: {
                                     lessOptions: {
                                         modifyVars: {
-                                            "primary-color": "#0743b0",
-                                            "link-color": "#0743b0",
-                                            "breadcrumb-height": "30px",
-                                            "breadcrumb-shadow": "none",
-                                            "ant-prefix": "linkfin"
+                                            "primary-color": "#d7000f",
+                                            "link-color": "#d7000f",
+                                            "ant-prefix": "linkfin",
+                                            "menu-inline-toplevel-item-height": "48px",
+                                            "menu-item-height": "48px"
                                         },
                                         javascriptEnabled: true
                                     }
