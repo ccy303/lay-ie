@@ -12,7 +12,7 @@
 }
 
 #nprogress .bar {
-    background: #d7000f;
+    background: @linkfin-primarg-color;
 
     position: fixed;
     z-index: 1031;
@@ -30,7 +30,7 @@
     right: 0px;
     width: 100px;
     height: 100%;
-    box-shadow: 0 0 10px #d7000f, 0 0 5px #d7000f;
+    box-shadow: 0 0 10px @linkfin-primarg-color, 0 0 5px @linkfin-primarg-color;
     opacity: 1;
 
     -webkit-transform: rotate(3deg) translate(0px, -4px);
@@ -55,8 +55,8 @@
     box-sizing: border-box;
 
     border: solid 2px transparent;
-    border-top-color: #d7000f;
-    border-left-color: #d7000f;
+    border-top-color: @linkfin-primarg-color;
+    border-left-color: @linkfin-primarg-color;
     border-radius: 50%;
 
     -webkit-animation: nprogress-spinner 400ms linear infinite;
@@ -96,5 +96,5 @@
 .linkfin-menu-item,
 .linkfin-menu-submenu-title,
 .linkfin-submenu-title {
-    margin: @link-menu-item-margin !important;
+    margin: @linkfin-menu-item-margin !important;
 }
