@@ -8,6 +8,22 @@
 }
 
 .menu {
+    li[class~="linkfin-menu-item-selected"],
+    li[class~="linkfin-menu-submenu-active"],
+    li[class~="linkfin-menu-submenu-selected"] {
+        color: #e12936 !important;
+        &::after {
+            border-bottom: 3px solid #d7000f !important;
+        }
+    }
+    li {
+        &:hover {
+            color: #e12936 !important;
+            &::after {
+                border-bottom: 3px solid #d7000f !important;
+            }
+        }
+    }
 }
 
 .link {

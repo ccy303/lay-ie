@@ -85,7 +85,9 @@ module.exports = {
                                             "link-color": "#d7000f",
                                             "ant-prefix": "linkfin",
                                             "menu-inline-toplevel-item-height": "48px",
-                                            "menu-item-height": "48px"
+                                            "menu-item-height": "48px",
+                                            "menu-dark-bg": "#1e1e2d",
+                                            "menu-dark-item-hover-bg": "#d7000f"
                                         },
                                         javascriptEnabled: true
                                     }

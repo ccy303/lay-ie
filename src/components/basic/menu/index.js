@@ -136,33 +136,36 @@ const MenuCom = props => {
     }, []);
 
     return (
-        <Observer>
-            {() => {
-                return (
-                    <Menu
-                        mode='inline'
-                        onClick={e => {
-                            store.activeKeys = e.key;
-                        }}
-                        defaultOpenKeys={store.openKeys}
-                        defaultSelectedKeys={[store.activeKeys]}
-                        selectedKeys={[store.activeKeys]}
-                        openKeys={store.openKeys}
-                        onOpenChange={onOpenChange}
-                    >
-                        {renderMenu(store.menus)}
-                        {design && (
-                            <Menu.Item key='root'>
-                                <a onClick={e => routeHandle(e, "root")} className={style["add-router"]}>
-                                    <PlusCircleTwoTone style={{ marginRight: "5px" }} />
-                                    添加路由
-                                </a>
-                            </Menu.Item>
-                        )}
-                    </Menu>
-                );
-            }}
-        </Observer>
+        <div className={style.menu}>
+            <Observer>
+                {() => {
+                    return (
+                        <Menu
+                            mode='inline'
+                            theme='dark'
+                            onClick={e => {
+                                store.activeKeys = e.key;
+                            }}
+                            defaultOpenKeys={store.openKeys}
+                            defaultSelectedKeys={[store.activeKeys]}
+                            selectedKeys={[store.activeKeys]}
+                            openKeys={store.openKeys}
+                            onOpenChange={onOpenChange}
+                        >
+                            {renderMenu(store.menus)}
+                            {design && (
+                                <Menu.Item key='root'>
+                                    <a onClick={e => routeHandle(e, "root")} className={style["add-router"]}>
+                                        <PlusCircleTwoTone style={{ marginRight: "5px" }} />
+                                        添加路由
+                                    </a>
+                                </Menu.Item>
+                            )}
+                        </Menu>
+                    );
+                }}
+            </Observer>
+        </div>
     );
 };
 
