@@ -45,6 +45,7 @@ const MenuCom = props => {
     }, [location]);
 
     const getMenu = (routes, menu = [], path = "") => {
+        console.log(routes);
         routes.forEach(route => {
             if (!design && route.auths && !checkAuth(route.auths, g_userAuth)) {
                 return;
@@ -55,7 +56,7 @@ const MenuCom = props => {
 
             if (design) {
                 const menuITem = {
-                    path: `${path}${route.path}`,
+                    path: route.fullPathName,
                     title: route.title,
                     routeId: route.routeId
                 };
@@ -67,7 +68,7 @@ const MenuCom = props => {
             } else {
                 if (route.menu) {
                     const menuITem = {
-                        path: `${path}${route.path}`,
+                        path: route.fullPathName,
                         title: route.title,
                         routeId: route.routeId
                     };
