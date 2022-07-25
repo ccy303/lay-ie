@@ -6,6 +6,7 @@ import routes from "@src/routes";
 import { checkAuth, getActiveRoute } from "@utils/index";
 import { PlusCircleTwoTone } from "@ant-design/icons";
 import { AddRouter, pageEdit } from "../design";
+import cfg from "@root/linkfin.json";
 import style from "./styles.less";
 const { SubMenu } = Menu;
 
@@ -136,13 +137,24 @@ const MenuCom = props => {
     }, []);
 
     return (
-        <div className={style.menu}>
+        <div className={style[`menu-${cfg.sliderTheme}`]}>
+            <div
+                style={{
+                    color: {
+                        dark: "rgba(255, 255, 255, 0.65)",
+                        light: "rgba(0, 0, 0, 0.85)"
+                    }[cfg.sliderTheme]
+                }}
+                className={style.title}
+            >
+                {cfg.menuTitle}
+            </div>
             <Observer>
                 {() => {
                     return (
                         <Menu
                             mode='inline'
-                            theme='dark'
+                            theme={cfg.sliderTheme}
                             onClick={e => {
                                 store.activeKeys = e.key;
                             }}
@@ -151,6 +163,7 @@ const MenuCom = props => {
                             selectedKeys={[store.activeKeys]}
                             openKeys={store.openKeys}
                             onOpenChange={onOpenChange}
+                            id={cfg.sliderTheme}
                         >
                             {renderMenu(store.menus)}
                             {design && (

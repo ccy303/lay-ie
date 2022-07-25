@@ -14,6 +14,7 @@ const routes = [
         menu: false,
         component: load(() => import("../components/business/home"))
     },
+    {},
     {
         title: "工作台",
         menu: false,

@@ -141,6 +141,14 @@ module.exports = {
         },
         client: {
             progress: true
+        },
+        proxy: {
+            "/client/pc": {
+                target: "http://xzbl.yry.sit.linkfin.caih.local",
+                changeOrigin: true,
+                logLevel: "debug",
+                onProxyRes: (proxyRes, req, res) => {}
+            }
         }
     }
 };

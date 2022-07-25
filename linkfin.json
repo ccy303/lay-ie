@@ -1,4 +1,6 @@
 {
-    "appTitle": "金服管理后台脚手架3.0",
-    "rootPath": "/home"
+    "appTitle": "电子账户",
+    "rootPath": "/home",
+    "menuTitle": "电子账户",
+    "sliderTheme": "light"
 }
