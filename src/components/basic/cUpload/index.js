@@ -3,31 +3,24 @@ import { Upload, Button, Message } from "antd";
 import { file as fileValid } from "@utils/valid";
 import { VerticalAlignTopOutlined, CloudUploadOutlined } from "@ant-design/icons";
 import { useLocalStore, Observer } from "mobx-react-lite";
+import { upload } from "@src/http/public";
+import { toJS } from "mobx";
 import style from "./index.less";
 export default props => {
-    const {
-        afterUpload = () => {},
-        afterRemove = () => {},
-        fileSize = 50,
-        listType = "text",
-        maxCount = Number.MAX_VALUE,
-        fileList,
-        ...arg
-    } = props;
-
+    const { onChange = () => {}, afterUpload = () => {}, afterRemove = () => {}, fileSize = 50, listType = "text", maxCount = Number.MAX_VALUE, fileList, value, ...arg } = props;
     const store = useLocalStore(() => {
         return { fileList: [] };
     });
 
     useEffect(() => {
-        if (fileList) {
-            store.fileList = [...fileList];
+        if (fileList || value) {
+            store.fileList = value && value.length ? [...value] : [...fileList];
         }
-    }, [fileList]);
+    }, [fileList, value]);
 
     const beforeUpload = async file => {
         try {
-            await Promise.all([fileValid.checkSize(file, 50)]);
+            await Promise.all([fileValid.checkSize(file, fileSize)]);
         } catch (err) {
             Message.warning(err);
         }
@@ -40,26 +33,33 @@ export default props => {
         const formdata = new FormData();
         formdata.append("file", option.files);
         // 发送ajax请求
-        // const res = await upload(formdata);
-        option.onSuccess({
-            ...option.file,
-            ...{
-                // ...res
-            }
-        });
-        afterUpload(option.file);
+        const res = await upload(formdata);
+        const file = {
+            name: option.file.name,
+            size: option.file.size,
+            type: option.file.type,
+            uid: option.file.uid,
+            thumbUrl: "https://ai.bdstatic.com/file/E2CD6F0D9015424ABD50A4D4A637C3B3",
+            url: "https://ai.bdstatic.com/file/E2CD6F0D9015424ABD50A4D4A637C3B3"
+        };
+
+        // option.onSuccess(option.file);
+
+        onChange?.([...toJS(store.fileList), { ...file, ...res }]);
+        afterUpload?.({ ...file, ...res }, store.fileList);
+
         if (!fileList) {
-            // maxCount && store.fileList.length < maxCount
             if (maxCount && store.fileList.length < maxCount) {
-                store.fileList = [...store.fileList, option.file];
+                store.fileList = [...store.fileList, { ...file }];
             } else {
-                store.fileList = [...store.fileList.slice(0, maxCount - 1), option.file];
+                store.fileList = [...store.fileList.slice(0, maxCount - 1), { ...file }];
             }
         }
     };
 
     const onRemove = file => {
-        afterRemove(file);
+        onChange?.(undefined);
+        afterRemove?.(file);
         if (!fileList) {
             store.fileList = [...store.fileList.filter(v => v.uid != file.uid)];
         }
@@ -70,12 +70,8 @@ export default props => {
             {() => {
                 return (
                     <Upload
-                        // maxCount == Number.MAX_VALUE 没有传入 maxCount
-                        className={
-                            maxCount == store.fileList.length
-                                ? `${style.upload} ${style["max-count"]}`
-                                : style.upload
-                        }
+                        // 没有传入 maxCount maxCount == Number.MAX_VALUE
+                        className={maxCount == store.fileList.length ? `${style.upload} ${style["max-count"]}` : style.upload}
                         onRemove={onRemove}
                         listType={listType}
                         fileList={store.fileList}
