@@ -7,7 +7,7 @@ import { matchPath } from "react-router-dom";
  * @returns true/false
  */
 export const checkAuth = (check, auths) => {
-    if (!check) {
+    if (!check || !check?.length) {
         return true;
     }
     for (let i = 0; i < check.length; i++) {
