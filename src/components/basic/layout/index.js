@@ -83,8 +83,8 @@ const LayoutUI = props => {
                     <div className={style.breadcrumb}>
                         <Observer>
                             {() => (
-                                <Breadcrumb>
-                                    {store.breadcrumb.map(v => {
+                                <Breadcrumb separator=">">
+                                    {[{ title: cfg.menuTitle }, ...store.breadcrumb].map(v => {
                                         return (
                                             <Breadcrumb.Item key={v.title}>
                                                 <BreadcrumbLink breadcrumb={v} />

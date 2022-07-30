@@ -7,7 +7,7 @@ import { matchPath } from "react-router-dom";
  * @returns true/false
  */
 export const checkAuth = (check, auths) => {
-    if (!check || !check.length) {
+    if (!check || !check?.length) {
         return true;
     }
     for (let i = 0; i < check.length; i++) {
@@ -132,4 +132,57 @@ export const getClientW = antdGrid => {
     if (offsetWidth < 576) {
         return "xs";
     }
+};
+
+/**
+ * 格式化primise错误信息 {name: string, error: object}
+ * @param {Primise Function} promise  promise队列
+ */
+export const formatePromise = (promise, name) => {
+    return new Promise((resolve, reject) => {
+        promise()
+            .then(res => {
+                resolve(res);
+            })
+            .catch(err => {
+                reject({ name: name || promise.name, error: err });
+            });
+    });
+};
+
+// 格式化金额
+export const thousandBit = num => {
+    if (!num || isNaN(Number(num))) {
+        return "";
+    }
+    num = Number(num)?.toFixed(2);
+    return String(num).replace(/\d+/, n => {
+        /* eslint-disable */
+        return n.replace(/(\d)(?=(\d{3})+$)/g, $1 => {
+            return `${$1},`;
+        });
+    });
+};
+
+export const getAuthCenter = () => {
+    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || ["product"];
+    return { product: "https://id.caih.com/" }[match] || "https://id-test.linkfinance.cn/";
+};
+
+export const getClientId = () => {
+    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || ["product"];
+    return { product: "6e14867aaa724f9dbae4d35cf0b74877" }[match] || "c83ab8923263451dbe240a4f3c2c12d6";
+};
+
+export const getFt = () => {
+    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || ["product"];
+    return (
+        {
+            dev: "http://ft.dev.linkfin.caih.local",
+            sit: "http://ft.sit.linkfin.caih.local",
+            uat: "http://ft.uat.linkfin.caih.local",
+            localhost: "http://ft.dev.linkfin.caih.local",
+            ["127.0.0.1"]: "http://ft.dev.linkfin.caih.local"
+        }[match] || "https://ft.caih.com/"
+    );
 };

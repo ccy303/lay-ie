@@ -1,6 +1,7 @@
 import { Input, Select as CSelect, Radio as CRadio, DatePicker, Checkbox as CCheckbox, InputNumber, Rate as CRate, Switch as CSwitch } from "antd";
 import React, { useEffect } from "react";
 import { useLocalStore, Observer } from "mobx-react-lite";
+import CUpload from "../cUpload";
 import moment from "moment";
 
 const CNumber = props => {
@@ -16,6 +17,7 @@ const CNumber = props => {
     const dateChange = e => {
         onChange?.(e);
     };
+
     return (
         <Observer>
             {() => (
@@ -141,5 +143,6 @@ export default {
     checkbox: CCheckbox.Group,
     number: CNumber,
     rate: CRate,
-    switch: CSwitch
+    switch: CSwitch,
+    upload: CUpload
 };

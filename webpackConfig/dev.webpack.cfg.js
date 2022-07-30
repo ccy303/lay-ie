@@ -144,7 +144,8 @@ module.exports = {
         },
         proxy: {
             "/client/pc": {
-                target: "http://xzbl.yry.sit.linkfin.caih.local",
+                target: "http://127.0.0.1:4523/m1/1341514-0-default",
+                // pathRewrite: { "^/api": "" },
                 changeOrigin: true,
                 logLevel: "debug",
                 onProxyRes: (proxyRes, req, res) => {}

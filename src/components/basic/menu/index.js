@@ -56,7 +56,7 @@ const MenuCom = props => {
 
             if (design) {
                 const menuITem = {
-                    path: `${path}${route.path}`,
+                    path: route.fullPathName,
                     title: route.title,
                     routeId: route.routeId
                 };
@@ -68,7 +68,7 @@ const MenuCom = props => {
             } else {
                 if (route.menu) {
                     const menuITem = {
-                        path: `${path}${route.path}`,
+                        path: route.fullPathName,
                         title: route.title,
                         routeId: route.routeId
                     };
