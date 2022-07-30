@@ -133,3 +133,33 @@ export const getClientW = antdGrid => {
         return "xs";
     }
 };
+
+/**
+ * 格式化primise错误信息 {name: string, error: object}
+ * @param {Primise Function} promise  promise队列
+ */
+export const formatePromise = (promise, name) => {
+    return new Promise((resolve, reject) => {
+        promise()
+            .then(res => {
+                resolve(res);
+            })
+            .catch(err => {
+                reject({ name: name || promise.name, error: err });
+            });
+    });
+};
+
+// 格式化金额
+export const thousandBit = num => {
+    if (!num || isNaN(Number(num))) {
+        return "";
+    }
+    num = Number(num)?.toFixed(2);
+    return String(num).replace(/\d+/, n => {
+        /* eslint-disable */
+        return n.replace(/(\d)(?=(\d{3})+$)/g, $1 => {
+            return `${$1},`;
+        });
+    });
+};

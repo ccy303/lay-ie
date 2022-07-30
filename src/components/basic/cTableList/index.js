@@ -6,6 +6,7 @@ import { autorun, runInAction } from "mobx";
 import { getClientW } from "@utils";
 import style from "./index.less";
 import axios from "@src/http/http.js";
+import qs from "qs";
 import { copy } from "copy-anything";
 const useTable = (table = {}) => {
     const tableRef = useRef(table);
@@ -33,11 +34,13 @@ const TableWarp = props => {
 };
 
 const TableList = props => {
-    const { showIndex = true, search, columns = [], dataSource = [], pagination = {}, requestCfg, ...other } = props;
+    const { queryToUrk = true, resetBtn = true, submitBtn = true, showIndex = true, search, columns = [], dataSource = [], pagination = {}, requestCfg, ...other } = props;
+    const query = qs.parse(location.href.split("?")[1] || "");
     const store = useLocalStore(() => ({
         ...__INTTSTORE__,
         pageSize: pagination.defaultPageSize || pagination.pageSize || __INTTSTORE__.pageSize,
-        page: pagination.page || pagination.page || __INTTSTORE__.page
+        page: pagination.page || pagination.page || __INTTSTORE__.page,
+        ...query
     }));
 
     useEffect(() => {
@@ -51,6 +54,7 @@ const TableList = props => {
             page: store.page,
             ..._params
         };
+        location.hash = location.hash.split("?")[0] + qs.stringify({ ...query, ...params }, { addQueryPrefix: true });
         let data;
         let total;
         store.loading = true;
@@ -102,17 +106,30 @@ const TableList = props => {
             },
             dom: (
                 <div className={style["btn-groups"]}>
-                    <Button className={style["mr-20"]} onClick={onReset}>
-                        重置
-                    </Button>
-                    <Button type='primary' onClick={onSearch}>
-                        搜索
-                    </Button>
+                    {resetBtn && (
+                        <Button className={style["mr-20"]} onClick={onReset}>
+                            重置
+                        </Button>
+                    )}
+                    {submitBtn && (
+                        <Button type='primary' onClick={onSearch}>
+                            搜索
+                        </Button>
+                    )}
                 </div>
             )
         });
 
         out.submitBtn = false;
+
+        if (!submitBtn) {
+            const _onValuesChange = out.onValuesChange;
+            out.onValuesChange = async () => {
+                const data = await form.validateFields();
+                _onValuesChange?.();
+                getData(data);
+            };
+        }
 
         return out;
     };
