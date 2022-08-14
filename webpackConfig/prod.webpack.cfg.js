@@ -84,10 +84,11 @@ module.exports = {
                                             "primary-color": "#d7000f",
                                             "link-color": "#d7000f",
                                             "ant-prefix": "linkfin",
-                                            "menu-inline-toplevel-item-height": "48px",
+                                            // "menu-item-active-bg": "#d7000f",
+                                            // "menu-highlight-color": "#fff",
                                             "menu-item-height": "48px",
-                                            "menu-dark-bg": "#1e1e2d",
-                                            "menu-dark-item-hover-bg": "#d7000f"
+                                            "menu-inline-submenu-bg": "#fff",
+                                            "menu-inline-toplevel-item-height": "48px"
                                         },
                                         javascriptEnabled: true
                                     }

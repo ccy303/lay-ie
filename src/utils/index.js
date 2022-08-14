@@ -1,5 +1,6 @@
 import { matchPath } from "react-router-dom";
-
+import history from "history/browser";
+import BigNumber from "bignumber.js";
 /**
  * 检查权限
  * @param {*} check 需要检查的权限
@@ -27,20 +28,20 @@ export const checkAuth = (check, auths) => {
 };
 
 /**
- * 深度优先查找当前记过路由
+ * 深度优先根据path查找路由
  * @param {*} route 路由
  * @param {*} path 当前路径
  * @param {*} join 拼接路由
  * @returns { Object | Boolean } 查询到时返回：{path: 当前激活路径, reoute: 当前激活路由}；无结果返回：false
  */
-export const getActiveRoute = (route, path, join = "") => {
+export const getRouteByPath = (route, path, join = "") => {
     let out = false;
     const _path = `${join || ""}${route.path}`;
     if (matchPath(_path, path)) {
         out = { path: route.activePath || _path, route };
     } else if (route.children) {
         for (let i = 0; i < route.children.length; i++) {
-            out = getActiveRoute(route.children[i], path, _path);
+            out = getRouteByPath(route.children[i], path, _path);
             if (out) {
                 break;
             }
@@ -50,7 +51,7 @@ export const getActiveRoute = (route, path, join = "") => {
 };
 
 /**
- * 根据keys value 查找route
+ * 查找route中第一个route[key|s]=value|s的路由
  * @param {*} routes
  * @param {*} keys
  * @param {*} vals
@@ -89,7 +90,6 @@ export const findRoute = (routes, keys, vals) => {
  */
 export const getBread = (route, path, out = []) => {
     // eslint-disable-next-line
-    // debugger;
     const arr = path.split("/");
     for (let i = 0; i < arr.length - 1; i++) {
         const _path = arr.slice(0, i + 2).join("/");
@@ -155,7 +155,7 @@ export const thousandBit = num => {
     if (!num || isNaN(Number(num))) {
         return "";
     }
-    num = Number(num)?.toFixed(2);
+    num = new BigNumber(num)?.toFixed(2);
     return String(num).replace(/\d+/, n => {
         /* eslint-disable */
         return n.replace(/(\d)(?=(\d{3})+$)/g, $1 => {
@@ -164,18 +164,37 @@ export const thousandBit = num => {
     });
 };
 
+// 替换url 不刷新页面
+export const replaceUrl = (url, sync) => {
+    if (sync) {
+        setTimeout(() => {
+            history.replace(url);
+        });
+    } else {
+        history.replace(url);
+    }
+};
+
 export const getAuthCenter = () => {
-    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || ["product"];
+    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || [
+        "product"
+    ];
     return { product: "https://id.caih.com/" }[match] || "https://id-test.linkfinance.cn/";
 };
 
 export const getClientId = () => {
-    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || ["product"];
-    return { product: "6e14867aaa724f9dbae4d35cf0b74877" }[match] || "c83ab8923263451dbe240a4f3c2c12d6";
+    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || [
+        "product"
+    ];
+    return (
+        { product: "6e14867aaa724f9dbae4d35cf0b74877" }[match] || "c83ab8923263451dbe240a4f3c2c12d6"
+    );
 };
 
 export const getFt = () => {
-    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || ["product"];
+    const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || [
+        "product"
+    ];
     return (
         {
             dev: "http://ft.dev.linkfin.caih.local",
@@ -183,6 +202,6 @@ export const getFt = () => {
             uat: "http://ft.uat.linkfin.caih.local",
             localhost: "http://ft.dev.linkfin.caih.local",
             ["127.0.0.1"]: "http://ft.dev.linkfin.caih.local"
-        }[match] || "https://ft.caih.com/"
+        }[match] || "https://ft.caih.com"
     );
 };

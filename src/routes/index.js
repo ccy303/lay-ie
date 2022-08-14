@@ -14,7 +14,6 @@ const routes = [
         menu: false,
         component: load(() => import("../components/business/home"))
     },
-    {},
     {
         title: "工作台",
         menu: false,
@@ -141,7 +140,7 @@ const format = (route, reset = { logined: false }) => {
         ...reset,
         ...route,
         fullPathName: `${reset.fullPathName || ""}${route.path}`,
-        routeId: uuidv5(`${route.title}${route.path}`, uuidv5.URL),
+        routeid: uuidv5(`${route.title}${route.path}`, uuidv5.URL),
         auths: Array.from(new Set([...(route.auths || []), ...(reset.auths || [])]))
     };
 
@@ -157,4 +156,5 @@ const format = (route, reset = { logined: false }) => {
 
     return _route;
 };
+
 export default routes.map(v => format(v));

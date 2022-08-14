@@ -1,12 +1,21 @@
 import React, { useEffect } from "react";
-import cfg from "@root/linkfin.json";
 import routes from "./index.js";
 import gStore from "@src/store/global";
-import { getUser } from "@src/http/public";
+import { getUser, getEnums } from "@src/http/public";
 import NoMatch from "@base/noMatch";
-import { checkAuth, getActiveRoute, findRoute } from "@utils/index";
+import { checkAuth, getRouteByPath, findRoute } from "@utils/index";
 import { useLocalStore, Observer } from "mobx-react-lite";
-import { HashRouter, Routes, Route, useNavigate, Outlet, useLocation, Navigate } from "react-router-dom";
+import cfg from "@root/linkfin.json";
+import {
+    HashRouter,
+    Routes,
+    Route,
+    useNavigate,
+    Outlet,
+    useLocation,
+    Navigate
+} from "react-router-dom";
+import { runInAction } from "mobx";
 const renderRoute = (routes, design) => {
     return (
         <>
@@ -21,7 +30,7 @@ const renderRoute = (routes, design) => {
                 } = route;
 
                 let { path } = route;
-                path = path.replace(/\//, "");
+                path = path?.replace(/\//, "");
                 const CheckAuth = () => {
                     const location = useLocation();
                     if (!design && logined && !gStore.g_userInfo) {
@@ -40,7 +49,12 @@ const renderRoute = (routes, design) => {
                 if (!children) {
                     if (Layout) {
                         return (
-                            <Route key={path} element={<Layout design={design} targetRoute={route} gStore={gStore} />}>
+                            <Route
+                                key={path}
+                                element={
+                                    <Layout design={design} targetRoute={route} gStore={gStore} />
+                                }
+                            >
                                 <Route path={path} element={<CheckAuth />} />
                             </Route>
                         );
@@ -49,7 +63,13 @@ const renderRoute = (routes, design) => {
                 } else {
                     if (Layout) {
                         return (
-                            <Route key={path} path={path} element={<Layout design={design} targetRoute={route} gStore={gStore} />}>
+                            <Route
+                                key={path}
+                                path={path}
+                                element={
+                                    <Layout design={design} targetRoute={route} gStore={gStore} />
+                                }
+                            >
                                 <Route index element={<NoMatch />} />
                                 {renderRoute(children, design)}
                                 <Route path='*' element={<NoMatch />} />
@@ -83,8 +103,6 @@ const PermissionRoute = props => {
     );
 };
 
-console.log(cfg);
-
 const Main = props => {
     const { DESIGN } = props;
     const store = useLocalStore(() => ({
@@ -95,6 +113,7 @@ const Main = props => {
     useEffect(() => {
         (async () => {
             try {
+                let res = null;
                 if (!DESIGN) {
                     const res = await getUser();
                     gStore.g_userInfo = res.userInfo;
@@ -104,18 +123,32 @@ const Main = props => {
                 location.pathname === "/" && navigate(cfg.rootPath);
             } catch (err) {
                 store.state = true;
-                for (let i = 0; i < routes.length; i++) {
-                    const res = getActiveRoute(routes[i], location.pathname);
-                    if (res) {
+                if (err?.response?.status == 405) {
+                    navigate(`/403?tp=1`);
+                    return;
+                }
+                let flag = 0;
+                // 查找第一个不需要登录的路由
+                for (; flag < routes.length; flag++) {
+                    const res = getRouteByPath(routes[flag], location.pathname);
+                    if (!res) {
+                        continue;
+                    }
+                    if (!res.route.logined) {
+                        navigate(location.pathname);
+                    } else {
                         // 查找第一个不需要登录就能查看的路由
                         const target = findRoute(
                             routes.filter(v => v.path !== "/login"),
                             "logined",
                             false
                         );
-                        navigate(!res.route.logined ? location.pathname : target?.fullPathName || "/login");
-                        break;
+                        navigate(target?.fullPathName || "/login");
                     }
+                    break;
+                }
+                if (flag == routes.length) {
+                    navigate("/login");
                 }
             }
         })();

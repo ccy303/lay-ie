@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import Menu from "../menu";
-import { Layout, Breadcrumb } from "antd";
+import { Layout, Breadcrumb, Spin } from "antd";
 import { Outlet, useLocation, Link } from "react-router-dom";
-import { Observer, useLocalStore } from "mobx-react-lite";
-import { getBread, getActiveRoute } from "@utils/index";
+import { Observer, useLocalStore, observer } from "mobx-react-lite";
+import { getBread, getRouteByPath } from "@utils/index";
+import gStore from "@src/store/global";
 import cfg from "@root/linkfin.json";
 import style from "./styles.less";
 
@@ -22,16 +23,33 @@ const BreadcrumbLink = props => {
     return <Link to={path}>{title}</Link>;
 };
 
+const SpinC = observer(() => {
+    return (
+        <>
+            {!!gStore.g_loading.visible ? (
+                <div className={style.spin}>
+                    <Spin spinning={!!gStore.g_loading.visible} tip={gStore.g_loading.text} />
+                </div>
+            ) : (
+                <></>
+            )}
+        </>
+    );
+});
+
 const LayoutUI = props => {
-    const { targetRoute } = props;
+    const { targetRoute, gStore } = props;
+    const { g_userInfo, g_loading } = gStore;
     const store = useLocalStore(() => ({
         breadcrumb: []
     }));
     const location = useLocation();
 
     useEffect(() => {
-        const custom = getActiveRoute(targetRoute, location.pathname)?.route?.breadcrumb;
-        store.breadcrumb = Array.isArray(custom) ? custom : getBread(targetRoute, location.pathname);
+        const custom = getRouteByPath(targetRoute, location.pathname)?.route?.breadcrumb;
+        store.breadcrumb = Array.isArray(custom)
+            ? custom
+            : getBread(targetRoute, location.pathname);
     }, [location]);
 
     useEffect(() => {
@@ -45,19 +63,28 @@ const LayoutUI = props => {
                     uat: "http://ft.uat.linkfin.caih.local",
                     default: "https://ft.caih.com"
                 };
-                const [match] = window.location.origin.match(/uat|dev|sit|localhost|127\.0\.0\.1/) || ["default"];
-                console.log(match);
+                const [match] = window.location.origin.match(
+                    /uat|dev|sit|localhost|127\.0\.0\.1/
+                ) || ["default"];
                 const dom = document.createElement("script");
                 dom.src = `${env[match || "default"]}/cdn/header.v1.0.0.js`;
                 document.querySelector("head").appendChild(dom);
                 dom.onload = () => {
                     window.$ch?.render({
-                        title: props.financial ? "金融机构工作台" : "客户工作台",
+                        title: !g_userInfo
+                            ? ""
+                            : g_userInfo?.financial
+                            ? "金融机构工作台"
+                            : "客户工作台",
                         inType: false,
-                        orgType: props.financial ? "financialer" : "customer",
-                        mobile: props.mobile,
+                        orgType: !g_userInfo
+                            ? ""
+                            : g_userInfo?.financial
+                            ? "financialer"
+                            : "customer",
+                        mobile: g_userInfo?.mobile,
                         logout: () => {
-                            window.location.href = `/client/pc/oauth2/logout?logout_success_url=${window.origin}`;
+                            window.location.href = `/client/oauth2/logout?logout_success_url=${window.origin}`;
                         }
                     });
                 };
@@ -83,7 +110,7 @@ const LayoutUI = props => {
                     <div className={style.breadcrumb}>
                         <Observer>
                             {() => (
-                                <Breadcrumb separator=">">
+                                <Breadcrumb separator='>'>
                                     {[{ title: cfg.menuTitle }, ...store.breadcrumb].map(v => {
                                         return (
                                             <Breadcrumb.Item key={v.title}>
@@ -100,6 +127,7 @@ const LayoutUI = props => {
                     </div>
                 </Layout.Content>
             </Layout>
+            <SpinC />
         </Layout>
     );
 };

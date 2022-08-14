@@ -5,22 +5,23 @@ import CUpload from "@base/cUpload";
 import style from "./index.less";
 
 export default props => {
-    const { onChange = () => {}, value, disabled, id } = props;
+    const { onChange = () => {}, value, disabled, id, fileUploadType = [] } = props;
     const store = useLocalStore(() => {
         return { list: [] };
     });
-
     const onFileChange = (file, index) => {
         const list = store.list.length ? toJS(store.list) : [{}, {}];
         list[index] = file;
         store.list = list;
-        onChange?.(toJS(store.list));
+        const target = store.list.find(v => !Object.keys(v).length);
+        !target && onChange?.(toJS(store.list));
     };
 
     const onFileRemove = index => {
         const list = toJS(store.list);
         list.splice(index, 1, {});
-        onChange?.(list);
+        store.list = list;
+        onChange?.(null);
     };
 
     useEffect(() => {
@@ -34,7 +35,12 @@ export default props => {
                     <div className={style["id-card"]} id={id}>
                         <div className={`${style["id-card-item"]} ${style["m-r-20"]}`}>
                             <CUpload
-                                fileList={store.list[0] && Object.keys(store.list[0]).length ? [store.list[0]] : []}
+                                fileList={
+                                    store.list[0] && Object.keys(store.list[0]).length
+                                        ? [store.list[0]]
+                                        : []
+                                }
+                                fileUploadType={fileUploadType[0]}
                                 afterUpload={file => onFileChange(file, 0)}
                                 afterRemove={() => onFileRemove(0)}
                                 listType='picture-card'
@@ -47,7 +53,12 @@ export default props => {
                         </div>
                         <div className={style["id-card-item"]}>
                             <CUpload
-                                fileList={store.list[1] && Object.keys(store.list[1]).length ? [store.list[1]] : []}
+                                fileList={
+                                    store.list[1] && Object.keys(store.list[1]).length
+                                        ? [store.list[1]]
+                                        : []
+                                }
+                                fileUploadType={fileUploadType[1]}
                                 afterUpload={file => onFileChange(file, 1)}
                                 afterRemove={() => onFileRemove(1)}
                                 listType='picture-card'

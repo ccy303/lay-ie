@@ -1,7 +1,16 @@
-import { Input, Select as CSelect, Radio as CRadio, DatePicker, Checkbox as CCheckbox, InputNumber, Rate as CRate, Switch as CSwitch } from "antd";
+import {
+    Input,
+    Select as CSelect,
+    Radio as CRadio,
+    DatePicker,
+    Checkbox as CCheckbox,
+    InputNumber,
+    Rate as CRate,
+    Switch as CSwitch
+} from "antd";
 import React, { useEffect } from "react";
 import { useLocalStore, Observer } from "mobx-react-lite";
-import CUpload from "../cUpload";
+import UploadC from "../cUpload";
 import moment from "moment";
 
 const CNumber = props => {
@@ -29,6 +38,7 @@ const CNumber = props => {
                     style={{ width: "100%" }}
                     value={store.value}
                     onChange={dateChange}
+                    title={value}
                 />
             )}
         </Observer>
@@ -69,7 +79,13 @@ const CRangeDataPicker = props => {
                 onChange?.(e.map(v => v?.format("YYYY-Q")));
                 break;
             default:
-                onChange?.(e.map(v => v?.format(`${other.showTime ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD 00:00:00"}`)));
+                onChange?.(
+                    e.map(v =>
+                        v?.format(
+                            `${other.showTime ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD 00:00:00"}`
+                        )
+                    )
+                );
         }
     };
 
@@ -126,16 +142,31 @@ const CDatePicker = props => {
                 onChange?.(value?.format("YYYY-Q"));
                 break;
             default: {
-                onChange?.(value?.format(`${other.showTime ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD 00:00:00"}`));
+                onChange?.(
+                    value?.format(
+                        `${other.showTime ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD 00:00:00"}`
+                    )
+                );
             }
         }
     };
 
-    return <Observer>{() => <DatePicker {...other} style={{ width: "100%" }} value={store.value} onChange={dateChange} />}</Observer>;
+    return (
+        <Observer>
+            {() => (
+                <DatePicker
+                    {...other}
+                    style={{ width: "100%" }}
+                    value={store.value}
+                    onChange={dateChange}
+                />
+            )}
+        </Observer>
+    );
 };
 
 export default {
-    text: Input,
+    text: props => <Input title={props.value} {...props} />,
     select: CSelect,
     radio: CRadio.Group,
     datePicker: CDatePicker,
@@ -144,5 +175,6 @@ export default {
     number: CNumber,
     rate: CRate,
     switch: CSwitch,
-    upload: CUpload
+    upload: UploadC,
+    password: Input.Password
 };

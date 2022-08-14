@@ -39,7 +39,11 @@ module.exports = {
                                         localIdentName: "[local]-[hash:base64:10]",
                                         getLocalIdent: (context, localIdentName, localName) => {
                                             const path = context._module.context;
-                                            if (/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(path)) {
+                                            if (
+                                                /^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
+                                                    path
+                                                )
+                                            ) {
                                                 return;
                                             } else {
                                                 return localName;
@@ -62,7 +66,11 @@ module.exports = {
                                         localIdentName: "[local]-[hash:base64:10]",
                                         getLocalIdent: (context, localIdentName, localName) => {
                                             const path = context._module.context;
-                                            if (/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(path)) {
+                                            if (
+                                                /^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
+                                                    path
+                                                )
+                                            ) {
                                                 return;
                                             } else {
                                                 return localName;
@@ -80,10 +88,11 @@ module.exports = {
                                             "primary-color": "#d7000f",
                                             "link-color": "#d7000f",
                                             "ant-prefix": "linkfin",
-                                            "menu-inline-toplevel-item-height": "48px",
+                                            // "menu-item-active-bg": "#d7000f",
+                                            // "menu-highlight-color": "#fff",
                                             "menu-item-height": "48px",
-                                            "menu-dark-bg": "#1e1e2d",
-                                            "menu-dark-item-hover-bg": "#d7000f"
+                                            "menu-inline-submenu-bg": "#fff",
+                                            "menu-inline-toplevel-item-height": "48px"
                                         },
                                         javascriptEnabled: true
                                     }

@@ -4,7 +4,7 @@ module.exports = {
   insertPragma: false,
   jsxBracketSameLine: false,
   jsxSingleQuote: true,
-  printWidth: 200,
+  printWidth: 100,
   proseWrap: "preserve",
   quoteProps: "as-needed",
   requirePragma: false,

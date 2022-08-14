@@ -3,26 +3,47 @@ import { Upload, Button, Message } from "antd";
 import { file as fileValid } from "@utils/valid";
 import { VerticalAlignTopOutlined, CloudUploadOutlined } from "@ant-design/icons";
 import { useLocalStore, Observer } from "mobx-react-lite";
-// import { upload } from "@src/http/public";
+import { upload, filePrev } from "@src/http/public";
 import { toJS } from "mobx";
+import gStore from "@src/store/global";
 import style from "./index.less";
 export default props => {
-    const { onChange = () => {}, afterUpload = () => {}, afterRemove = () => {}, fileSize = 50, fileType, listType = "text", maxCount = Number.MAX_VALUE, fileList, value, id, ...arg } = props;
+    const {
+        onChange = () => {},
+        afterUpload = () => {},
+        afterRemove = () => {},
+        fileSize = 50,
+        fileType,
+        listType = "text",
+        maxCount = Number.MAX_VALUE,
+        fileList = [],
+        value,
+        fileUploadType = "",
+        id,
+        btnText = "上传",
+        fullLoading = true,
+        ...arg
+    } = props;
     const store = useLocalStore(() => {
         return { fileList: [] };
     });
-
     useEffect(() => {
         if (fileList || value) {
-            store.fileList = value && value.length ? [...value] : [...fileList];
+            const _value = (value && value?.filter(v => !!Object.keys(v).length)) || [];
+            store.fileList = value && _value.length ? [..._value] : [...fileList];
         }
     }, [fileList, value]);
 
     const beforeUpload = async file => {
         try {
-            await Promise.all([fileValid.checkSize(file, fileSize)]);
+            const vailArr = [fileValid.checkSize(file, fileSize)];
+            if (fileType) {
+                vailArr.push(fileValid.checkType(file, fileType));
+            }
+            await Promise.all(vailArr);
         } catch (err) {
             Message.warning(err);
+            return false;
         }
     };
 
@@ -31,17 +52,25 @@ export default props => {
      */
     const customRequest = async option => {
         const formdata = new FormData();
-        formdata.append("file", option.files);
+        formdata.append("file", option.file);
         // 发送ajax请求
-        // const res = await upload(formdata);
+        fullLoading &&
+            (gStore.g_loading = {
+                visible: true,
+                text: "文件上传中..."
+            });
+        const res = await upload(fileUploadType, formdata);
+        fullLoading &&
+            (gStore.g_loading = {
+                visible: false,
+                text: ""
+            });
         const file = {
             name: option.file.name,
-            uid: option.file.uid,
-            thumbUrl: "https://ai.bdstatic.com/file/E2CD6F0D9015424ABD50A4D4A637C3B3",
-            url: "https://ai.bdstatic.com/file/E2CD6F0D9015424ABD50A4D4A637C3B3"
+            uid: res.data_id,
+            thumbUrl: filePrev(res.data_id),
+            url: filePrev(res.data_id)
         };
-
-        // option.onSuccess(option.file);
 
         onChange?.([...toJS(store.fileList), { ...file, ...res }]);
         afterUpload?.({ ...file, ...res }, store.fileList);
@@ -70,7 +99,11 @@ export default props => {
                     <div id={id}>
                         <Upload
                             // 没有传入 maxCount maxCount == Number.MAX_VALUE
-                            className={maxCount == store.fileList.length ? `${style.upload} ${style["max-count"]}` : style.upload}
+                            className={
+                                maxCount == store.fileList.length
+                                    ? `${style.upload} ${style["max-count"]}`
+                                    : style.upload
+                            }
                             onRemove={onRemove}
                             listType={listType}
                             fileList={store.fileList}
@@ -81,7 +114,7 @@ export default props => {
                             {listType == "text" && (
                                 <Button>
                                     <VerticalAlignTopOutlined />
-                                    上传
+                                    {btnText}
                                 </Button>
                             )}
                             {listType != "text" && (
