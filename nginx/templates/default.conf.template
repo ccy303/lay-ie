@@ -1,0 +1,16 @@
+# 默认和通用配置
+# client_max_body_size  10m;
+gzip                  on;
+gzip_disable          msie6;
+gzip_types            *;
+gzip_vary             on;
+server_tokens         off;
+
+server {
+  listen        80 default_server;
+  listen        [::]:80 default_server;
+  server_name   localhost _;
+  root          /app;
+  index         index.html;
+  
+}
