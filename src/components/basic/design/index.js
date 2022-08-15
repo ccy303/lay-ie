@@ -3,7 +3,6 @@ import axios from "axios";
 import { Message, Button, Select, Row, Col } from "antd";
 import { PlusOutlined, ToolTwoTone, MinusCircleOutlined } from "@ant-design/icons";
 import Modal from "../cModal";
-import Loading from "../fullLoading";
 import CForm, { holderFun } from "../cForm";
 import style from "./index.less";
 
@@ -301,7 +300,6 @@ const pageEdit = async key => {
                 coms: form.pageForm.getFieldValue(),
                 key
             });
-            Loading.show("代码生成中...");
         },
         content: <CForm {...cfg} />
     });

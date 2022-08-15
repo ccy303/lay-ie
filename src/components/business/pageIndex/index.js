@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Collapse } from "antd";
 import CModal, { useCModal } from "@base/cModal";
-import CUpload from "@base/CUpload";
+import CUpload from "@base/cUpload";
 import { useLocalStore, Observer } from "mobx-react-lite";
 const { Panel } = Collapse;
 export default (props) => {

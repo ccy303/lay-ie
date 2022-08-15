@@ -1,12 +1,14 @@
 .warp {
     height: 100%;
+    position: relative;
     .header {
         height: @linkfin-header-height;
         background-color: @linkfin-header-bgcolor;
         padding: 0;
+        position: relative;
+        z-index: 99;
     }
     .sider {
-        background-color: @linkfin-sider-bgcolor;
         div[class~="linkfin-layout-sider-children"] {
             overflow: auto;
             padding-bottom: 20px;
@@ -35,5 +37,18 @@
             overflow-x: hidden;
             padding: 20px;
         }
+    }
+    .spin {
+        position: fixed;
+        z-index: 10003;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(64, 55, 55, 0.1);
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
     }
 }

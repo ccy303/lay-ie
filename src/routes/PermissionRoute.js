@@ -1,12 +1,20 @@
 import React, { useEffect } from "react";
-import cfg from "@root/linkfin.json";
+import cfg from "@root/linkfin";
 import routes from "./index.js";
 import gStore from "@src/store/global";
-import { getUser } from "@src/http/public";
 import NoMatch from "@base/noMatch";
-import { checkAuth, getActiveRoute, findRoute } from "@utils/index";
+import { checkAuth, getRouteByPath, findRoute } from "@utils/index";
 import { useLocalStore, Observer } from "mobx-react-lite";
-import { HashRouter, Routes, Route, useNavigate, Outlet, useLocation, Navigate } from "react-router-dom";
+import {
+    HashRouter,
+    Routes,
+    Route,
+    useNavigate,
+    Outlet,
+    useLocation,
+    Navigate
+} from "react-router-dom";
+import { runInAction } from "mobx";
 const renderRoute = (routes, design) => {
     return (
         <>
@@ -40,7 +48,12 @@ const renderRoute = (routes, design) => {
                 if (!children) {
                     if (Layout) {
                         return (
-                            <Route key={path} element={<Layout design={design} targetRoute={route} gStore={gStore} />}>
+                            <Route
+                                key={path}
+                                element={
+                                    <Layout design={design} targetRoute={route} gStore={gStore} />
+                                }
+                            >
                                 <Route path={path} element={<CheckAuth />} />
                             </Route>
                         );
@@ -49,7 +62,13 @@ const renderRoute = (routes, design) => {
                 } else {
                     if (Layout) {
                         return (
-                            <Route key={path} path={path} element={<Layout design={design} targetRoute={route} gStore={gStore} />}>
+                            <Route
+                                key={path}
+                                path={path}
+                                element={
+                                    <Layout design={design} targetRoute={route} gStore={gStore} />
+                                }
+                            >
                                 <Route index element={<NoMatch />} />
                                 {renderRoute(children, design)}
                                 <Route path='*' element={<NoMatch />} />
@@ -83,8 +102,6 @@ const PermissionRoute = props => {
     );
 };
 
-console.log(cfg);
-
 const Main = props => {
     const { DESIGN } = props;
     const store = useLocalStore(() => ({
@@ -95,33 +112,57 @@ const Main = props => {
     useEffect(() => {
         (async () => {
             try {
+                let uInfo = {};
                 if (!DESIGN) {
-                    const res = await getUser();
-                    gStore.g_userInfo = res.userInfo;
-                    gStore.g_userAuth = res.auth;
+                    uInfo = await cfg.getUserFun();
+                    runInAction(() => {
+                        gStore.g_userInfo = uInfo.userInfo;
+                        gStore.g_userAuth = uInfo.auth;
+                    });
+                }
+                try {
+                    const res = await cfg?.appWillMount({ ...uInfo });
+                    gStore.g_customData = res;
+                } catch (err) {
+                    throw new Error(err);
                 }
                 store.state = true;
                 location.pathname === "/" && navigate(cfg.rootPath);
             } catch (err) {
                 store.state = true;
-                for (let i = 0; i < routes.length; i++) {
-                    const res = getActiveRoute(routes[i], location.pathname);
-                    if (res) {
+                if (cfg.getUserFunErr) {
+                    cfg.getUserFunErr?.(err);
+                    return;
+                }
+                let flag = 0;
+                for (; flag < routes.length; flag++) {
+                    // 查找路由是否存在路由列表中
+                    const res = getRouteByPath(routes[flag], location.pathname);
+                    if (!res) {
+                        continue;
+                    }
+                    if (!res.route.logined) {
+                        // navigate(location.pathname);
+                        break;
+                    } else {
                         // 查找第一个不需要登录就能查看的路由
                         const target = findRoute(
                             routes.filter(v => v.path !== "/login"),
                             "logined",
                             false
                         );
-                        navigate(!res.route.logined ? location.pathname : target?.fullPathName || "/login");
+                        navigate(target?.fullPathName || "/login");
                         break;
                     }
+                }
+                if (flag == routes.length) {
+                    navigate("/login");
                 }
             }
         })();
     }, []);
 
-    location.pathname === "/" && store.state && navigate(`${cfg.rootPath}?a=12`);
+    location.pathname === "/" && store.state && navigate(`${cfg.rootPath}`);
     return <Observer>{() => <>{store.state ? <Outlet /> : <></>}</>}</Observer>;
 };
 

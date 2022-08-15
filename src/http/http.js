@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { Message } from "antd";
+import { message } from "antd";
 
 const ax = Axios.create({});
 
@@ -18,12 +18,32 @@ ax.interceptors.request.use(config => {
 // 响应拦截
 ax.interceptors.response.use(
     response => {
-        const { data } = response;
-        return data;
+        const { data, headers } = response;
+        return response.headers["x-total-count"]
+            ? { data: formatBody(data), total: headers["x-total-count"] }
+            : formatBody(data);
     },
     err => {
+        !err?.response?.config?.headers?.["NO-E-MSG"] && message.error(err.response.data.message);
         return Promise.reject(err);
     }
 );
+
+const formatBody = data => {
+    let output = data;
+    if (Object.prototype.toString.call(data) == "[object Array]") {
+        output = data.map(v => {
+            return formatBody(v);
+        });
+    }
+    if (Object.prototype.toString.call(data) == "[object Object]") {
+        output = {};
+        Object.keys(data).map(v => {
+            const key = v.replace(/[A-Z]/g, $1 => `_${$1.toLowerCase()}`);
+            output[key] = formatBody(data[v]);
+        });
+    }
+    return output;
+};
 
 export default ax;

@@ -14,7 +14,13 @@ const store = observable(
 );
 
 const CModal = props => {
-    const { children, name = Object.keys(store.visible).length + 1, onOk = () => {}, onCancel = () => {}, ...arg } = props;
+    const {
+        children,
+        name = Object.keys(store.visible).length + 1,
+        onOk = () => {},
+        onCancel = () => {},
+        ...arg
+    } = props;
     store.visible = {
         ...store.visible,
         [name]: false
@@ -29,16 +35,26 @@ const CModal = props => {
 
     const ok = async () => {
         localStore.loading = true;
-        await onOk();
-        localStore.loading = false;
-        store.visible[name] = false;
+        try {
+            await onOk();
+            localStore.loading = false;
+            store.visible[name] = false;
+        } catch (err) {
+            localStore.loading = false;
+        }
     };
 
     return (
         <Observer>
             {() => {
                 return (
-                    <Modal visible={store.visible[name]} confirmLoading={localStore.loading} onCancel={cancel} onOk={ok} {...arg}>
+                    <Modal
+                        visible={store.visible[name]}
+                        confirmLoading={localStore.loading}
+                        onCancel={cancel}
+                        onOk={ok}
+                        {...arg}
+                    >
                         {props.children}
                     </Modal>
                 );
@@ -76,28 +92,42 @@ CModal.confirm = props => {
             loading: false
         }));
         const cancel = async () => {
-            const res = await onCancel();
-            if (res === false) {
-                return;
+            try {
+                const res = await onCancel();
+                if (res === false) {
+                    return;
+                }
+                store.visible = false;
+            } catch (err) {
+                store.loading = false;
+                throw new Error(err);
             }
-            dom.remove();
-            store.visible = false;
         };
         const ok = async () => {
             store.loading = true;
-            const res = await onOk();
-            store.loading = false;
-            if (res === false) {
-                return;
+            try {
+                const res = await onOk();
+                store.loading = false;
+                if (res === false) {
+                    return;
+                }
+                store.visible = false;
+            } catch (err) {
+                store.loading = false;
+                throw new Error(err);
             }
-            dom.remove();
-            store.visible = false;
         };
         return (
             <Observer>
                 {() => (
                     <ConfigProvider locale={zhCN} prefixCls='linkfin'>
-                        <Modal visible={store.visible} confirmLoading={store.loading} onCancel={cancel} onOk={ok} {...other}>
+                        <Modal
+                            visible={store.visible}
+                            confirmLoading={store.loading}
+                            onCancel={cancel}
+                            onOk={ok}
+                            {...other}
+                        >
                             {content}
                         </Modal>
                     </ConfigProvider>

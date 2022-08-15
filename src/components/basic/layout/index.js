@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import Header from "../header";
 import Menu from "../menu";
-import { Layout, Breadcrumb } from "antd";
+import { Layout, Breadcrumb, Spin } from "antd";
 import { Outlet, useLocation, Link } from "react-router-dom";
-import { Observer, useLocalStore } from "mobx-react-lite";
-import { getBread, getActiveRoute } from "@utils/index";
+import { Observer, useLocalStore, observer } from "mobx-react-lite";
+import { getBread, getRouteByPath } from "@utils/index";
+import gStore from "@src/store/global";
+import cfg from "@root/linkfin";
 import style from "./styles.less";
 
 const BreadcrumbLink = props => {
@@ -22,16 +24,33 @@ const BreadcrumbLink = props => {
     return <Link to={path}>{title}</Link>;
 };
 
+const SpinC = observer(() => {
+    return (
+        <>
+            {!!gStore.g_loading.visible ? (
+                <div className={style.spin}>
+                    <Spin spinning={!!gStore.g_loading.visible} tip={gStore.g_loading.text} />
+                </div>
+            ) : (
+                <></>
+            )}
+        </>
+    );
+});
+
 const LayoutUI = props => {
-    const { targetRoute } = props;
+    const { targetRoute, gStore } = props;
+    const { g_userInfo, g_loading } = gStore;
     const store = useLocalStore(() => ({
         breadcrumb: []
     }));
     const location = useLocation();
 
     useEffect(() => {
-        const custom = getActiveRoute(targetRoute, location.pathname)?.route?.breadcrumb;
-        store.breadcrumb = Array.isArray(custom) ? custom : getBread(targetRoute, location.pathname);
+        const custom = getRouteByPath(targetRoute, location.pathname)?.route?.breadcrumb;
+        store.breadcrumb = Array.isArray(custom)
+            ? custom
+            : getBread(targetRoute, location.pathname);
     }, [location]);
 
     return (
@@ -40,15 +59,23 @@ const LayoutUI = props => {
                 <Header {...props} />
             </Layout.Header>
             <Layout>
-                <Layout.Sider className={style.sider}>
+                <Layout.Sider
+                    className={style.sider}
+                    style={{
+                        backgroundColor: {
+                            dark: "#1e1e2d",
+                            light: "#fff"
+                        }[cfg.sliderTheme || "light"]
+                    }}
+                >
                     <Menu {...props} />
                 </Layout.Sider>
                 <Layout.Content className={style.content}>
                     <div className={style.breadcrumb}>
                         <Observer>
                             {() => (
-                                <Breadcrumb>
-                                    {store.breadcrumb.map(v => {
+                                <Breadcrumb separator='>'>
+                                    {[{ title: cfg.menuTitle }, ...store.breadcrumb].map(v => {
                                         return (
                                             <Breadcrumb.Item key={v.title}>
                                                 <BreadcrumbLink breadcrumb={v} />
@@ -64,6 +91,7 @@ const LayoutUI = props => {
                     </div>
                 </Layout.Content>
             </Layout>
+            <SpinC />
         </Layout>
     );
 };

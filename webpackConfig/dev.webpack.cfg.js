@@ -3,7 +3,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ESLintPlugin = require("eslint-webpack-plugin");
-const cfg = require("../linkfin.json");
+const cfg = require("../linkfin");
 const handler = (percentage, message, ...args) => {
     console.info(`${(percentage * 100).toFixed(2)}%`, message, ...args);
 };
@@ -39,7 +39,11 @@ module.exports = {
                                         localIdentName: "[local]-[hash:base64:10]",
                                         getLocalIdent: (context, localIdentName, localName) => {
                                             const path = context._module.context;
-                                            if (/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(path)) {
+                                            if (
+                                                /^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
+                                                    path
+                                                )
+                                            ) {
                                                 return;
                                             } else {
                                                 return localName;
@@ -62,7 +66,11 @@ module.exports = {
                                         localIdentName: "[local]-[hash:base64:10]",
                                         getLocalIdent: (context, localIdentName, localName) => {
                                             const path = context._module.context;
-                                            if (/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(path)) {
+                                            if (
+                                                /^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
+                                                    path
+                                                )
+                                            ) {
                                                 return;
                                             } else {
                                                 return localName;
@@ -80,8 +88,12 @@ module.exports = {
                                             "primary-color": "#d7000f",
                                             "link-color": "#d7000f",
                                             "ant-prefix": "linkfin",
+                                            "menu-item-height": "48px",
+                                            "menu-inline-submenu-bg": "#fff",
                                             "menu-inline-toplevel-item-height": "48px",
-                                            "menu-item-height": "48px"
+                                            "menu-dark-highlight-color": "#fff",
+                                            "menu-dark-bg": "#13131c",
+                                            "menu-dark-selected-item-text-color": "#0000ff"
                                         },
                                         javascriptEnabled: true
                                     }
@@ -113,7 +125,7 @@ module.exports = {
             template: "./public/template.html",
             filename: "index.html",
             favicon: "./favicon.ico",
-            title: cfg.appTitle,
+            title: cfg.title,
             chunks: ["app"]
         }),
         new CleanWebpackPlugin({ verbose: true }),
@@ -139,6 +151,16 @@ module.exports = {
         },
         client: {
             progress: true
+        },
+        proxy: {
+            "/client": {
+                // target: "http://eac.yry.dev.linkfin.caih.local",
+                target: "http://eac.yry.sit.linkfin.caih.local",
+                // pathRewrite: { "^/api": "" },
+                changeOrigin: true,
+                logLevel: "debug",
+                onProxyRes: (proxyRes, req, res) => {}
+            }
         }
     }
 };

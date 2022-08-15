@@ -8,6 +8,10 @@ const formStore = observable({
     forms: {}
 });
 
+const ItemText = props => {
+    return <>{props.value || "-"}</>;
+};
+
 export const holderFun = (type, text) => {
     if (type == "rangeDataPicker") {
         return ["开始日期", "结束日期"];
@@ -21,33 +25,37 @@ export const holderFun = (type, text) => {
             number: "输入",
             select: "选择",
             checkbox: "选择",
-            datePicker: "选择"
+            datePicker: "选择",
+            password: "输入"
         }[type]
     }${text}`;
 };
 
-const FormItem = cfg => {
-    const { type, props, dom, colLength, ...other } = cfg;
-    if (dom) {
-        return dom;
-    }
-    const Com = FormInt[type];
-    const Item = () => (
-        <Form.Item {...other}>
-            <Com
-                {...{
-                    allowClear: true,
-                    placeholder: holderFun(type, cfg.label),
-                    ...props
-                }}
-            />
-        </Form.Item>
-    );
+const FormItem = React.memo(cfg => {
+    const { type, props, dom, colLength, colSpan, dtl, ...other } = cfg;
+    const Item = () => {
+        if (dom) {
+            return dom;
+        }
+        const Com = dtl ? ItemText : FormInt[type];
 
+        return (
+            <Form.Item {...other}>
+                <Com
+                    {...{
+                        allowClear: true,
+                        placeholder: holderFun(type, cfg.label),
+                        dtl,
+                        ...props
+                    }}
+                />
+            </Form.Item>
+        );
+    };
     return (
         <>
             {colLength ? (
-                <Col span={Math.floor(24 / colLength)}>
+                <Col span={colSpan?.span || Math.floor(24 / colLength)}>
                     <Item />
                 </Col>
             ) : (
@@ -55,26 +63,46 @@ const FormItem = cfg => {
             )}
         </>
     );
-};
+});
 
-const CForm = props => {
-    const { items, submitBtn = true, cForm = Object.keys(formStore.forms).length, ...other } = props;
+const CForm = React.memo(props => {
+    const {
+        autoSetForm = true,
+        items,
+        submitBtn = true,
+        cForm = Object.keys(formStore.forms).length,
+        dtl,
+        ...other
+    } = props;
     const [form] = Form.useForm();
-    if (!formStore.forms[cForm]) {
+    if (autoSetForm) {
         formStore.forms[cForm] = form;
     }
     return (
-        <Form style={{ width: "100%" }} form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }} {...other}>
+        <Form
+            style={{ width: "100%" }}
+            form={form}
+            labelCol={{ span: 7 }}
+            wrapperCol={{ span: 17 }}
+            {...other}
+        >
             <Row gutter={20}>
                 {items.map((item, idx) => {
                     const { colSpan } = item;
-                    delete item.colSpan;
                     if (Array.isArray(item)) {
                         return (
                             <Col span={24} key={idx}>
                                 <Row gutter={20}>
                                     {item.map((colItem, index) => {
-                                        return <FormItem key={index} {...colItem} colLength={item.length} />;
+                                        return (
+                                            <FormItem
+                                                dtl={dtl}
+                                                colSpan={colSpan}
+                                                key={index}
+                                                colLength={item.length}
+                                                {...colItem}
+                                            />
+                                        );
                                     })}
                                 </Row>
                             </Col>
@@ -92,7 +120,7 @@ const CForm = props => {
                                       xxl: 6
                                   })}
                         >
-                            <FormItem {...item} />
+                            <FormItem dtl={dtl} {...item} />
                         </Col>
                     );
                 })}
@@ -110,7 +138,7 @@ const CForm = props => {
             </Row>
         </Form>
     );
-};
+});
 
 CForm.cUseForm = () => formStore.forms;
 
