@@ -6,7 +6,7 @@ import { Outlet, useLocation, Link } from "react-router-dom";
 import { Observer, useLocalStore, observer } from "mobx-react-lite";
 import { getBread, getRouteByPath } from "@utils/index";
 import gStore from "@src/store/global";
-import cfg from "@root/linkfin";
+import { appConfig } from "@root/appConfig";
 import style from "./styles.less";
 
 const BreadcrumbLink = props => {
@@ -65,7 +65,7 @@ const LayoutUI = props => {
                         backgroundColor: {
                             dark: "#1e1e2d",
                             light: "#fff"
-                        }[cfg.sliderTheme || "light"]
+                        }[appConfig.sliderTheme || "light"]
                     }}
                 >
                     <Menu {...props} />
@@ -75,7 +75,7 @@ const LayoutUI = props => {
                         <Observer>
                             {() => (
                                 <Breadcrumb separator='>'>
-                                    {[{ title: cfg.menuTitle }, ...store.breadcrumb].map(v => {
+                                    {[...store.breadcrumb].map(v => {
                                         return (
                                             <Breadcrumb.Item key={v.title}>
                                                 <BreadcrumbLink breadcrumb={v} />

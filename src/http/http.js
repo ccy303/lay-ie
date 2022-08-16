@@ -1,7 +1,10 @@
 import Axios from "axios";
 import { message } from "antd";
+import { appConfig } from "@root/appConfig";
 
-const ax = Axios.create({});
+const { http } = appConfig;
+
+const ax = Axios.create(http?.axiosCfg || {});
 
 // 请求拦截
 ax.interceptors.request.use(config => {
@@ -17,14 +20,10 @@ ax.interceptors.request.use(config => {
 
 // 响应拦截
 ax.interceptors.response.use(
-    response => {
-        const { data, headers } = response;
-        return response.headers["x-total-count"]
-            ? { data: formatBody(data), total: headers["x-total-count"] }
-            : formatBody(data);
-    },
+    response => http.httpWILLResponse(response),
     err => {
-        !err?.response?.config?.headers?.["NO-E-MSG"] && message.error(err.response.data.message);
+        !err.response?.config?.headers?.["NO-E-MSG"] && message.error(http.formatErrMsg(err));
+        http.httpWILLReject?.(err);
         return Promise.reject(err);
     }
 );

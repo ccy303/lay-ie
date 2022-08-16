@@ -3,7 +3,6 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ESLintPlugin = require("eslint-webpack-plugin");
-const cfg = require("../linkfin");
 const handler = (percentage, message, ...args) => {
     console.info(`${(percentage * 100).toFixed(2)}%`, message, ...args);
 };
@@ -125,7 +124,6 @@ module.exports = {
             template: "./public/template.html",
             filename: "index.html",
             favicon: "./favicon.ico",
-            title: cfg.title,
             chunks: ["app"]
         }),
         new CleanWebpackPlugin({ verbose: true }),

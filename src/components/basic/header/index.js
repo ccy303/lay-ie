@@ -2,9 +2,9 @@ import React from "react";
 import style from "./styles.less";
 import { Link } from "react-router-dom";
 import { Observer } from "mobx-react-lite";
-import cfg from "@root/linkfin";
+import { appConfig } from "@root/appConfig";
 const Header = props => {
-    const { header } = cfg;
+    const { header } = appConfig;
     const { gStore } = props;
     return (
         <div className={style.warp}>

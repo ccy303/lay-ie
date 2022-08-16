@@ -6,7 +6,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const cfg = require("../linkfin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const handler = (percentage, message, ...args) => {
     console.info(`${(percentage * 100).toFixed(2)}%`, message, ...args);
@@ -139,7 +138,6 @@ module.exports = {
             template: "./public/template.html",
             filename: "index.html",
             favicon: "./favicon.ico",
-            title: cfg.title
         }),
         new CleanWebpackPlugin({ verbose: true }),
         new MiniCssExtractPlugin({

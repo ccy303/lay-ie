@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import cfg from "@root/linkfin";
+import { appConfig } from "@root/appConfig";
 import routes from "./index.js";
 import gStore from "@src/store/global";
 import NoMatch from "@base/noMatch";
@@ -114,46 +114,49 @@ const Main = props => {
             try {
                 let uInfo = {};
                 if (!DESIGN) {
-                    uInfo = await cfg.getUserFun();
+                    uInfo = await appConfig.getUserFun();
                     runInAction(() => {
                         gStore.g_userInfo = uInfo.userInfo;
                         gStore.g_userAuth = uInfo.auth;
                     });
                 }
                 try {
-                    const res = await cfg?.appWillMount({ ...uInfo });
+                    const res = await appConfig?.appWillMount({ ...uInfo });
                     gStore.g_customData = res;
                 } catch (err) {
                     throw new Error(err);
                 }
+                (location.pathname === "/login" || location.pathname === "/") &&
+                    navigate(appConfig.rootPath);
                 store.state = true;
-                location.pathname === "/" && navigate(cfg.rootPath);
             } catch (err) {
                 store.state = true;
-                if (cfg.getUserFunErr) {
-                    cfg.getUserFunErr?.(err);
+                if (appConfig.getUserFunErr) {
+                    appConfig.getUserFunErr?.(err);
                     return;
                 }
                 let flag = 0;
                 for (; flag < routes.length; flag++) {
-                    // 查找路由是否存在路由列表中
+                    // 查找路由是否存在路由列表中,不存在重定向到登录
                     const res = getRouteByPath(routes[flag], location.pathname);
                     if (!res) {
                         continue;
-                    }
-                    if (!res.route.logined) {
-                        // navigate(location.pathname);
-                        break;
                     } else {
-                        // 查找第一个不需要登录就能查看的路由
-                        const target = findRoute(
-                            routes.filter(v => v.path !== "/login"),
-                            "logined",
-                            false
-                        );
-                        navigate(target?.fullPathName || "/login");
                         break;
                     }
+                    // if (!res.route.logined) {
+                    //     // navigate(location.pathname);
+                    //     break;
+                    // } else {
+                    //     // 查找第一个不需要登录就能查看的路由
+                    //     const target = findRoute(
+                    //         routes.filter(v => v.path !== "/login"),
+                    //         "logined",
+                    //         false
+                    //     );
+                    //     navigate(target?.fullPathName || "/login");
+                    //     break;
+                    // }
                 }
                 if (flag == routes.length) {
                     navigate("/login");
@@ -161,8 +164,7 @@ const Main = props => {
             }
         })();
     }, []);
-
-    location.pathname === "/" && store.state && navigate(`${cfg.rootPath}`);
+    location.pathname === "/" && store.state && navigate(`${appConfig.rootPath}`);
     return <Observer>{() => <>{store.state ? <Outlet /> : <></>}</>}</Observer>;
 };
 

@@ -1,17 +1,34 @@
 import React from "react";
-export default {
+
+export const appConfig = {
     rootPath: "/home", // 跟路由
     sliderTheme: "dark", // 侧边菜单主题
-    title: "金服管理后台脚手架3.0", // 浏览器页签标题
+    // 框架会自动抛出错误信息和message提示，不会处理成功提示，http请求定义时，通过 header 设置 NO-E-MSG：true/false 配置是否由框架提示错误信息
+    http: {
+        axiosCfg: {}, // axios 配置
+        // http 请求 返回请求体前执行,不支持 异步 函数
+        httpWILLResponse: response => {
+            const { data, headers } = response;
+            return response.headers["x-total-count"]
+                ? { data: data, total: headers["x-total-count"] }
+                : data;
+        },
+        // http 请求抛出异常之前前执行,不支持异步函数
+        httpOnReject: err => {},
+        // 定义错误提示
+        formatErrMsg: err => {
+            return err.response.data.message;
+        }
+    },
     // 获取用户信息方式
     getUserFun: async () => {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                // resolve({
-                //     userInfo: { phone: "phone****" },
-                //     auth: ["auth1", "auth2", "auth3"]
-                // });
-                reject("err");
+                resolve({
+                    userInfo: { phone: "phone****" },
+                    auth: ["auth1", "auth2", "auth3"]
+                });
+                // reject("err");
             }, 1000);
         });
     },
@@ -26,8 +43,8 @@ export default {
         //         <img src={require("@images/logo_dx.png")} />
         //     </a>
         // ),
-        appTitle: "金服管理后台脚手架3.0",
-        // appTitle: <span>金服管理后台脚手架3.0</span>
+        // appTitle: "金服管理后台脚手架3.0",
+        appTitle: <span>金服管理后台脚手架3.0</span>,
         userInfoDataIndex: "phone", // 展示数据字段,不存在显示 -
         // userInfoDom: props => {}, // 自定义用户信息渲染，不可和userInfoDataIndex公用，props含全部数据
         logoutFun: props => {} // 登出函数props含全部数据

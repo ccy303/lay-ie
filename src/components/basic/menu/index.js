@@ -5,7 +5,7 @@ import { Menu } from "antd";
 import routes from "@src/routes";
 import { checkAuth, getRouteByPath } from "@utils/index";
 import { AddRouter, pageEdit } from "../design";
-import cfg from "@root/linkfin";
+import { appConfig } from "@root/appConfig";
 import style from "./styles.less";
 const { SubMenu } = Menu;
 
@@ -146,13 +146,13 @@ const MenuCom = props => {
     }, []);
 
     return (
-        <div className={style[`menu-${cfg.sliderTheme || "light"}`]}>
+        <div className={style[`menu-${appConfig.sliderTheme || "light"}`]}>
             <Observer>
                 {() => {
                     return (
                         <Menu
                             mode='inline'
-                            theme={cfg.sliderTheme || "light"}
+                            theme={appConfig.sliderTheme || "light"}
                             onClick={e => {
                                 navigate(e.key);
                                 store.activeKeys = e.key;
@@ -162,7 +162,7 @@ const MenuCom = props => {
                             selectedKeys={[store.activeKeys]}
                             openKeys={store.openKeys}
                             onOpenChange={onOpenChange}
-                            id={cfg.sliderTheme || "light"}
+                            id={appConfig.sliderTheme || "light"}
                             items={store.menus}
                         >
                             {/* {renderMenu(store.menus)}
