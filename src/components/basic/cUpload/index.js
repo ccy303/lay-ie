@@ -59,28 +59,36 @@ export default props => {
                 visible: true,
                 text: "文件上传中..."
             });
-        const res = await upload(fileUploadType, formdata);
-        fullLoading &&
-            (gStore.g_loading = {
-                visible: false,
-                text: ""
-            });
-        const file = {
-            name: option.file.name,
-            uid: res.data_id,
-            thumbUrl: filePrev(res.data_id),
-            url: filePrev(res.data_id)
-        };
+        try {
+            const res = await upload(fileUploadType, formdata);
+            fullLoading &&
+                (gStore.g_loading = {
+                    visible: false,
+                    text: ""
+                });
+            const file = {
+                name: option.file.name,
+                uid: res.data_id,
+                thumbUrl: filePrev(res.data_id),
+                url: filePrev(res.data_id)
+            };
 
-        onChange?.([...toJS(store.fileList), { ...file, ...res }]);
-        afterUpload?.({ ...file, ...res }, store.fileList);
+            onChange?.([...toJS(store.fileList), { ...file, ...res }]);
+            afterUpload?.({ ...file, ...res }, store.fileList);
 
-        if (!fileList) {
-            if (maxCount && store.fileList.length < maxCount) {
-                store.fileList = [...store.fileList, { ...file }];
-            } else {
-                store.fileList = [...store.fileList.slice(0, maxCount - 1), { ...file }];
+            if (!fileList) {
+                if (maxCount && store.fileList.length < maxCount) {
+                    store.fileList = [...store.fileList, { ...file }];
+                } else {
+                    store.fileList = [...store.fileList.slice(0, maxCount - 1), { ...file }];
+                }
             }
+        } catch (err) {
+            fullLoading &&
+                (gStore.g_loading = {
+                    visible: false,
+                    text: ""
+                });
         }
     };
 

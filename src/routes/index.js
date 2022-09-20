@@ -121,7 +121,7 @@ const routes = [
                 menu: true,
                 logined: true,
                 auths: ["auth4", "auth2 & auth3"],
-                component: load(() => import("../components/business/home"))
+                component: load(() => import("../components/business/test"))
             }
         ]
     },

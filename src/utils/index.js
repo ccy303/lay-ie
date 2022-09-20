@@ -152,7 +152,7 @@ export const formatePromise = (promise, name) => {
 
 // 格式化金额
 export const thousandBit = num => {
-    if (!num || isNaN(Number(num))) {
+    if (num === undefined || num === null || num === "" || isNaN(Number(num))) {
         return "";
     }
     num = new BigNumber(num)?.toFixed(2);

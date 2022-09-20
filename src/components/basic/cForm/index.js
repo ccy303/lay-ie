@@ -45,7 +45,6 @@ const FormItem = React.memo(cfg => {
                     {...{
                         allowClear: true,
                         placeholder: holderFun(type, cfg.label),
-                        dtl,
                         ...props
                     }}
                 />
@@ -96,7 +95,7 @@ const CForm = React.memo(props => {
                                     {item.map((colItem, index) => {
                                         return (
                                             <FormItem
-                                                dtl={dtl}
+                                                dtl={!!dtl}
                                                 colSpan={colSpan}
                                                 key={index}
                                                 colLength={item.length}
@@ -107,22 +106,23 @@ const CForm = React.memo(props => {
                                 </Row>
                             </Col>
                         );
+                    } else {
+                        return (
+                            <Col
+                                key={idx}
+                                {...(colSpan
+                                    ? colSpan
+                                    : {
+                                          xs: 12,
+                                          lg: 8,
+                                          xl: 8,
+                                          xxl: 6
+                                      })}
+                            >
+                                <FormItem dtl={!!dtl} {...item} />
+                            </Col>
+                        );
                     }
-                    return (
-                        <Col
-                            key={idx}
-                            {...(colSpan
-                                ? colSpan
-                                : {
-                                      xs: 12,
-                                      lg: 8,
-                                      xl: 8,
-                                      xxl: 6
-                                  })}
-                        >
-                            <FormItem dtl={dtl} {...item} />
-                        </Col>
-                    );
                 })}
                 {submitBtn && (
                     <Col span={24}>

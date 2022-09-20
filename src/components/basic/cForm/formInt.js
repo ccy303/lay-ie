@@ -80,7 +80,7 @@ const CRangeDataPicker = props => {
                 break;
             default:
                 onChange?.(
-                    e.map(v =>
+                    e?.map(v =>
                         v?.format(
                             `${other.showTime ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD 00:00:00"}`
                         )
@@ -166,7 +166,9 @@ const CDatePicker = props => {
 };
 
 export default {
-    text: props => <Input title={props.value} {...props} />,
+    text: props => {
+        return <Input title={props.value} {...props} />;
+    },
     select: CSelect,
     radio: CRadio.Group,
     datePicker: CDatePicker,

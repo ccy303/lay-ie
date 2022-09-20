@@ -28,21 +28,4 @@ ax.interceptors.response.use(
     }
 );
 
-const formatBody = data => {
-    let output = data;
-    if (Object.prototype.toString.call(data) == "[object Array]") {
-        output = data.map(v => {
-            return formatBody(v);
-        });
-    }
-    if (Object.prototype.toString.call(data) == "[object Object]") {
-        output = {};
-        Object.keys(data).map(v => {
-            const key = v.replace(/[A-Z]/g, $1 => `_${$1.toLowerCase()}`);
-            output[key] = formatBody(data[v]);
-        });
-    }
-    return output;
-};
-
 export default ax;

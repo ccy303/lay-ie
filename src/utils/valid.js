@@ -25,7 +25,10 @@ class File {
 
     checkType(file, types) {
         const suffix = file?.name?.split(".").pop();
-        return this.conpare(!types.includes(suffix), "文件格式不正确");
+        return this.conpare(
+            !types.includes(suffix) && !types.includes(suffix?.toLowerCase()),
+            "文件格式不正确"
+        );
     }
 }
 

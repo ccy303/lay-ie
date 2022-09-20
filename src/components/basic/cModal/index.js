@@ -66,54 +66,83 @@ const CModal = props => {
 CModal.acClose = target => {
     if (!target) {
         for (const key in store.visible) {
-            store.visible[key] = false;
+            Object.prototype.toString.call(store.visible[target]) == "[object Object]"
+                ? store.visible[key].close()
+                : (store.visible[key] = false);
         }
     }
-    store.visible[target] = false;
+    Object.prototype.toString.call(store.visible[target]) == "[object Object]"
+        ? store.visible[target].close()
+        : (store.visible[target] = false);
 };
 
 CModal.acOpen = target => {
     if (!target) {
         for (const key in store.visible) {
-            store.visible[key] = true;
+            Object.prototype.toString.call(store.visible[target]) == "[object Object]"
+                ? store.visible[key].open()
+                : (store.visible[key] = true);
         }
     }
-    store.visible[target] = true;
+    Object.prototype.toString.call(store.visible[target]) == "[object Object]"
+        ? store.visible[target].open()
+        : (store.visible[target] = true);
 };
 
 CModal.confirm = props => {
-    const { content, onOk = () => {}, onCancel = () => {}, ...other } = props;
-    const dom = document.createElement("div");
+    const {
+        content,
+        onOk = () => {},
+        name = Object.keys(store.visible).length + 1,
+        onCancel = () => {},
+        ...other
+    } = props;
+
+    let dom = document.createElement("div");
     document.body.appendChild(dom);
 
+    store.visible = {
+        [name]: {
+            close: () => {
+                localStore.visible = false;
+            },
+            open: () => {
+                let dom = document.createElement("div");
+                document.body.appendChild(dom);
+                ReactDOM.render(<Comfirm />, dom);
+            }
+        }
+    };
+
+    const localStore = observable({
+        visible: true,
+        loading: false
+    });
+
     const Comfirm = () => {
-        const store = useLocalStore(() => ({
-            visible: true,
-            loading: false
-        }));
         const cancel = async () => {
             try {
                 const res = await onCancel();
                 if (res === false) {
                     return;
                 }
-                store.visible = false;
+                localStore.visible = false;
             } catch (err) {
-                store.loading = false;
+                localStore.loading = false;
                 throw new Error(err);
             }
         };
         const ok = async () => {
-            store.loading = true;
+            localStore.loading = true;
             try {
                 const res = await onOk();
-                store.loading = false;
+                localStore.loading = false;
+                localStore.visible = false;
                 if (res === false) {
                     return;
                 }
-                store.visible = false;
             } catch (err) {
-                store.loading = false;
+                localStore.loading = false;
                 throw new Error(err);
             }
         };
@@ -122,10 +151,11 @@ CModal.confirm = props => {
                 {() => (
                     <ConfigProvider locale={zhCN} prefixCls='linkfin'>
                         <Modal
-                            visible={store.visible}
-                            confirmLoading={store.loading}
+                            visible={localStore.visible}
+                            confirmLoading={localStore.loading}
                             onCancel={cancel}
                             onOk={ok}
+                            getContainer={dom}
                             {...other}
                         >
                             {content}
