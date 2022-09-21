@@ -5,15 +5,7 @@ import gStore from "@src/store/global";
 import NoMatch from "@base/noMatch";
 import { checkAuth, getRouteByPath, findRoute } from "@utils/index";
 import { useLocalStore, Observer } from "mobx-react-lite";
-import {
-    HashRouter,
-    Routes,
-    Route,
-    useNavigate,
-    Outlet,
-    useLocation,
-    Navigate
-} from "react-router-dom";
+import { HashRouter, Routes, Route, useNavigate, Outlet, useLocation, Navigate } from "react-router-dom";
 import { runInAction } from "mobx";
 const renderRoute = (routes, design) => {
     return (
@@ -48,12 +40,7 @@ const renderRoute = (routes, design) => {
                 if (!children) {
                     if (Layout) {
                         return (
-                            <Route
-                                key={path}
-                                element={
-                                    <Layout design={design} targetRoute={route} gStore={gStore} />
-                                }
-                            >
+                            <Route key={path} element={<Layout design={design} targetRoute={route} gStore={gStore} />}>
                                 <Route path={path} element={<CheckAuth />} />
                             </Route>
                         );
@@ -62,13 +49,7 @@ const renderRoute = (routes, design) => {
                 } else {
                     if (Layout) {
                         return (
-                            <Route
-                                key={path}
-                                path={path}
-                                element={
-                                    <Layout design={design} targetRoute={route} gStore={gStore} />
-                                }
-                            >
+                            <Route key={path} path={path} element={<Layout design={design} targetRoute={route} gStore={gStore} />}>
                                 <Route index element={<NoMatch />} />
                                 {renderRoute(children, design)}
                                 <Route path='*' element={<NoMatch />} />
@@ -126,8 +107,7 @@ const Main = props => {
                 } catch (err) {
                     throw new Error(err);
                 }
-                (location.pathname === "/login" || location.pathname === "/") &&
-                    navigate(appConfig.rootPath);
+                (location.pathname === "/login" || location.pathname === "/") && navigate(appConfig.rootPath);
                 store.state = true;
             } catch (err) {
                 store.state = true;

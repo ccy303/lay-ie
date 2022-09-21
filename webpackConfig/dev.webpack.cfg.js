@@ -38,11 +38,7 @@ module.exports = {
                                         localIdentName: "[local]-[hash:base64:10]",
                                         getLocalIdent: (context, localIdentName, localName) => {
                                             const path = context._module.context;
-                                            if (
-                                                /^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
-                                                    path
-                                                )
-                                            ) {
+                                            if (/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(path)) {
                                                 return;
                                             } else {
                                                 return localName;
@@ -65,11 +61,7 @@ module.exports = {
                                         localIdentName: "[local]-[hash:base64:10]",
                                         getLocalIdent: (context, localIdentName, localName) => {
                                             const path = context._module.context;
-                                            if (
-                                                /^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
-                                                    path
-                                                )
-                                            ) {
+                                            if (/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(path)) {
                                                 return;
                                             } else {
                                                 return localName;
@@ -131,13 +123,15 @@ module.exports = {
     ],
     resolve: {
         // 自动补全后缀，注意第一个必须是空字符串,后缀一定以点开头
-        extensions: [".js", ".json", ".css"],
+        extensions: [".js", ".json", ".css", ".mjs"],
         alias: {
             "@root": path.resolve(__dirname, "../"),
             "@src": path.resolve(__dirname, "../src"),
             "@base": path.resolve(__dirname, "../src/components/basic"),
             "@utils": path.resolve(__dirname, "../src/utils"),
-            "@images": path.resolve(__dirname, "../src/images")
+            "@images": path.resolve(__dirname, "../src/images"),
+            "react/jsx-runtime": "react/jsx-runtime.js",
+            "react/jsx-dev-runtime": "react/jsx-dev-runtime.js"
         }
     },
     devServer: {

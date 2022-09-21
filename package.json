@@ -14,7 +14,9 @@
         "axios": "^0.26.1",
         "compression": "^1.7.4",
         "core-js": "^3.21.1",
-        "nprogress": "^0.2.0"
+        "nprogress": "^0.2.0",
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1"
     },
     "devDependencies": {
         "@ant-design/icons": "^4.7.0",
