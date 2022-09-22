@@ -154,8 +154,8 @@ const Main = props => {
                 } catch (err) {
                     throw new Error(err);
                 }
-                (location.pathname === "/login" || location.pathname === "/") &&
-                    navigate(appConfig.rootPath);
+                // (location.pathname === "/login" || location.pathname === "/") &&
+                //     navigate(appConfig.rootPath);
                 store.state = true;
             } catch (err) {
                 store.state = true;
@@ -179,7 +179,7 @@ const Main = props => {
             }
         })();
     }, []);
-    location.pathname === "/" && store.state && navigate(`${appConfig.rootPath}`);
+    // location.pathname === "/" && store.state && navigate(`${appConfig.rootPath}`);
     return <Observer>{() => <>{store.state ? <Outlet /> : <></>}</>}</Observer>;
 };
 

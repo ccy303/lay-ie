@@ -1,12 +1,12 @@
 import React from "react";
 import gStore from "@src/store/global.js";
 import { Observer } from "mobx-react-lite";
-import { toJS } from "mobx";
+import { toJS, runInAction } from "mobx";
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import CModal from "@base/cModal";
 import CForm from "@base/cForm";
 import { Tree } from "antd";
-import { pushChildRouteByKey, getRouteByKeyOnTree } from "@utils/";
+import { pushChildRouteByKey, getRouteByKeyOnTree, formatRoute } from "@utils/";
 import style from "./index.less";
 
 export default () => {
@@ -19,7 +19,8 @@ export default () => {
             wrapperCol: { span: 12 },
             initialValues: {
                 layout: true,
-                menu: true
+                menu: true,
+                logined: true
             },
             items: [
                 [
@@ -75,6 +76,21 @@ export default () => {
                             ]
                         }
                     }
+                ],
+                [
+                    {
+                        name: "logined",
+                        label: "是否登录后可访问",
+                        type: "radio",
+                        rules: [{ required: true, message: "请选择是否登录后可访问" }],
+                        props: {
+                            options: [
+                                { value: true, label: "是" },
+                                { value: false, label: "否" }
+                            ]
+                        }
+                    },
+                    { dom: <></> }
                 ]
             ]
         };
@@ -92,9 +108,13 @@ export default () => {
                 const tree = pushChildRouteByKey(data.key, toJS(gStore.g_config.router), {
                     ...res,
                     title: res.name,
-                    key: res.path
+                    key: res.path,
+                    path: /^\//.test(res.path) ? res.path : `/${res.path}`
                 });
-                gStore.g_config.router = tree;
+                runInAction(() => {
+                    gStore.g_config.router = tree.map(v => formatRoute(v));
+                    gStore.g_config.reouteTreeReloadKey = Math.random();
+                });
             }
         });
     };
@@ -104,10 +124,10 @@ export default () => {
     return (
         <Observer>
             {() => {
-                console.log(toJS(gStore.g_config.router));
                 return (
                     <>
                         <Tree
+                            key={gStore.g_config.reouteTreeReloadKey}
                             style={{ width: "100%" }}
                             showLine={true}
                             showIcon={true}
@@ -117,7 +137,7 @@ export default () => {
                             titleRender={data => {
                                 return (
                                     <div className={style.row}>
-                                        {data.title}
+                                        <a href={`/#${data.fullPathName || "/"}`}>{data.title}</a>
                                         <div>
                                             <span
                                                 className={style["plus"]}

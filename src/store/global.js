@@ -7,11 +7,13 @@ export default observable({
         text: ""
     },
     g_customData: {},
+    reouteTreeReloadKey: 0,
     g_config: {
         router: [
             {
                 title: "根目录",
-                key: "root"
+                key: "root",
+                path: ""
             }
         ]
     }

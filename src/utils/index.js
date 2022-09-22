@@ -2,6 +2,8 @@ import { matchPath } from "react-router-dom";
 import history from "history/browser";
 import BigNumber from "bignumber.js";
 import { copy } from "copy-anything";
+import { v5 as uuidv5 } from "uuid";
+
 /**
  * 检查权限
  * @param {*} check 需要检查的权限
@@ -204,4 +206,28 @@ export const pushChildRouteByKey = (key, tree, childRoute) => {
         }
     }
     return _tree;
+};
+
+// 格式化路由
+export const formatRoute = (route, reset = { logined: false }) => {
+    const _route = {
+        breadcrumb: { breadcrumb: true, disabled: !route.component },
+        ...reset,
+        ...route,
+        fullPathName: `${reset.fullPathName || ""}${route.path}`,
+        routeId: uuidv5(`${route.title}${route.path}`, uuidv5.URL),
+        auths: Array.from(new Set([...(route.auths || []), ...(reset.auths || [])]))
+    };
+
+    if (_route.children) {
+        for (let i = 0; i < _route.children.length; i++) {
+            _route.children[i] = formatRoute(_route.children[i], {
+                logined: _route.logined || false,
+                fullPathName: _route.fullPathName,
+                auths: _route.auths
+            });
+        }
+    }
+
+    return _route;
 };

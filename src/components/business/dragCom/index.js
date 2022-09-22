@@ -12,7 +12,7 @@ const ComList = [
         conpoment: <CTableList />
     },
     {
-        name: "步骤条",
+        name: "按钮",
         conpoment: <Button>按钮</Button>
     }
 ];
