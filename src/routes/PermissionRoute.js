@@ -3,10 +3,46 @@ import { appConfig } from "@root/appConfig";
 import routes from "./index.js";
 import gStore from "@src/store/global";
 import NoMatch from "@base/noMatch";
-import { checkAuth, getRouteByPath, findRoute } from "@utils/index";
+import { checkAuth, getRouteByPath } from "@utils/index";
 import { useLocalStore, Observer } from "mobx-react-lite";
-import { HashRouter, Routes, Route, useNavigate, Outlet, useLocation, Navigate } from "react-router-dom";
+import {
+    HashRouter,
+    Routes,
+    Route,
+    useNavigate,
+    Outlet,
+    useLocation,
+    Navigate
+} from "react-router-dom";
 import { runInAction } from "mobx";
+
+import { useDrop } from "react-dnd";
+
+const DropContainer = props => {
+    const [{ canDrop, isOver }, drop] = useDrop(() => ({
+        accept: "compoment",
+        drop: () => ({ name: "test" }),
+        collect: monitor => {
+            console.log(monitor);
+            return {
+                isOver: monitor.isOver(),
+                canDrop: monitor.canDrop()
+            };
+        }
+    }));
+    const isActive = canDrop && isOver;
+
+    return (
+        <div
+            style={{ border: isActive ? "1px dashed #000" : "", height: "100%" }}
+            ref={drop}
+            data-testid='test'
+        >
+            {props.children}
+        </div>
+    );
+};
+
 const renderRoute = (routes, design) => {
     return (
         <>
@@ -31,16 +67,21 @@ const renderRoute = (routes, design) => {
                         return <Navigate to={`/403`} />;
                     }
                     return (
-                        <>
+                        <DropContainer>
                             <Component gStore={gStore} location={location} />
-                        </>
+                        </DropContainer>
                     );
                 };
 
                 if (!children) {
                     if (Layout) {
                         return (
-                            <Route key={path} element={<Layout design={design} targetRoute={route} gStore={gStore} />}>
+                            <Route
+                                key={path}
+                                element={
+                                    <Layout design={design} targetRoute={route} gStore={gStore} />
+                                }
+                            >
                                 <Route path={path} element={<CheckAuth />} />
                             </Route>
                         );
@@ -49,7 +90,13 @@ const renderRoute = (routes, design) => {
                 } else {
                     if (Layout) {
                         return (
-                            <Route key={path} path={path} element={<Layout design={design} targetRoute={route} gStore={gStore} />}>
+                            <Route
+                                key={path}
+                                path={path}
+                                element={
+                                    <Layout design={design} targetRoute={route} gStore={gStore} />
+                                }
+                            >
                                 <Route index element={<NoMatch />} />
                                 {renderRoute(children, design)}
                                 <Route path='*' element={<NoMatch />} />
@@ -107,7 +154,8 @@ const Main = props => {
                 } catch (err) {
                     throw new Error(err);
                 }
-                (location.pathname === "/login" || location.pathname === "/") && navigate(appConfig.rootPath);
+                (location.pathname === "/login" || location.pathname === "/") &&
+                    navigate(appConfig.rootPath);
                 store.state = true;
             } catch (err) {
                 store.state = true;
@@ -124,19 +172,6 @@ const Main = props => {
                     } else {
                         break;
                     }
-                    // if (!res.route.logined) {
-                    //     // navigate(location.pathname);
-                    //     break;
-                    // } else {
-                    //     // 查找第一个不需要登录就能查看的路由
-                    //     const target = findRoute(
-                    //         routes.filter(v => v.path !== "/login"),
-                    //         "logined",
-                    //         false
-                    //     );
-                    //     navigate(target?.fullPathName || "/login");
-                    //     break;
-                    // }
                 }
                 if (flag == routes.length) {
                     navigate("/login");

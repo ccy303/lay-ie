@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observable } from "mobx";
 import { Observer } from "mobx-react-lite";
-import Home from "../home";
 const store = observable({
     C: null
 });

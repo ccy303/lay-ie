@@ -157,10 +157,13 @@ const TableList = React.forwardRef((props, ref) => {
         const out = copy(search);
         let i = 0;
         const { items } = out;
+        if (!items) {
+            return;
+        }
         // row 下有${i} 个 col
-        while (!Array.isArray(items[items.length - 1 - i])) {
+        while (!Array.isArray(items?.[items?.length - 1 - i])) {
             i++;
-            if (items.length == i) {
+            if (items?.length == i) {
                 break;
             }
         }
@@ -246,7 +249,7 @@ const TableList = React.forwardRef((props, ref) => {
 
     return (
         <>
-            {!!search && (
+            {!!(!!search && Object.keys(search).length) && (
                 <div className={style["form-warp"]}>
                     <CForm {...{ autoSetForm: false, form, ...getBtnCol(search) }} />
                 </div>

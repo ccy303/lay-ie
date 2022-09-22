@@ -1,6 +1,7 @@
 import { matchPath } from "react-router-dom";
 import history from "history/browser";
 import BigNumber from "bignumber.js";
+import { copy } from "copy-anything";
 /**
  * 检查权限
  * @param {*} check 需要检查的权限
@@ -172,4 +173,35 @@ export const replaceUrl = (url, sync) => {
     } else {
         history.replace(url);
     }
+};
+
+// 根据key寻找route树节点
+export const getRouteByKeyOnTree = (key, tree) => {
+    let out = null;
+    for (let i = 0, len = tree.length; i < len; i++) {
+        if (tree[i].key == key) {
+            out = tree[i];
+            break;
+        } else if (tree[i].children) {
+            out = getRouteByKeyOnTree(key, tree[i].children);
+        }
+    }
+    return out;
+};
+
+// 向route tree 中 key 命中的路由添加子路由
+export const pushChildRouteByKey = (key, tree, childRoute) => {
+    let _tree = copy(tree);
+    for (let i = 0, len = _tree.length; i < len; i++) {
+        if (_tree[i].key == key) {
+            if (!_tree[i].children) {
+                _tree[i].children = [];
+            }
+            _tree[i].children.push(childRoute);
+            break;
+        } else if (_tree[i].children) {
+            _tree[i].children = pushChildRouteByKey(key, _tree[i].children, childRoute);
+        }
+    }
+    return _tree;
 };

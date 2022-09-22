@@ -149,6 +149,7 @@ const MenuCom = props => {
         <div className={style[`menu-${appConfig.sliderTheme || "light"}`]}>
             <Observer>
                 {() => {
+                    console.log(store.menus);
                     return (
                         <Menu
                             mode='inline'

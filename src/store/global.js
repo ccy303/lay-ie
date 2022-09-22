@@ -6,5 +6,13 @@ export default observable({
         visible: false,
         text: ""
     },
-    g_customData: {}
+    g_customData: {},
+    g_config: {
+        router: [
+            {
+                title: "根目录",
+                key: "root"
+            }
+        ]
+    }
 });

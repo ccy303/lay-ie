@@ -1,42 +1,32 @@
 import React from "react";
 import PermissionRoute from "./routes/PermissionRoute";
 import style from "./app.less";
+import { Collapse } from "antd";
+const { Panel } = Collapse;
 
-import { useDrag, DndProvider } from "react-dnd";
+import { DndProvider } from "react-dnd";
 
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-const Test = () => {
-    const [{ isDragging }, drag] = useDrag(() => ({
-        type: "Test",
-        collect: monitor => ({
-            isDragging: !!monitor.isDragging()
-        })
-    }));
-    return (
-        <div
-            ref={drag}
-            style={{
-                opacity: isDragging ? 0.5 : 1,
-                fontSize: 25,
-                fontWeight: "bold",
-                cursor: "move"
-            }}
-        >
-            ♘
-        </div>
-    );
-};
+import DragCom from "@src/components/business/dragCom";
+import RouteEdit from "@src/components/business/routeEdit";
 
 const App = props => {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className={style.app}>
                 <div className={style.left}>
-                    <Test />
+                    <Collapse defaultActiveKey={["2"]}>
+                        <Panel header='组件' key='1'>
+                            <DragCom />
+                        </Panel>
+                        <Panel header='路由编辑' key='2'>
+                            <RouteEdit />
+                        </Panel>
+                    </Collapse>
                 </div>
                 <div className={style.right}>
-                    <PermissionRoute />
+                    <PermissionRoute DESIGN={true} />
                 </div>
             </div>
         </DndProvider>
