@@ -6,11 +6,12 @@ import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import CModal from "@base/cModal";
 import CForm from "@base/cForm";
 import { Tree } from "antd";
-import { pushChildRouteByKey, getRouteByKeyOnTree, formatRoute } from "@utils/";
+import Route from "@utils/route";
 import style from "./index.less";
 
 export default () => {
     const addRoute = data => {
+        const route = new Route(toJS(gStore.g_config.router));
         const form = CForm.cUseForm();
         const config = {
             cForm: "routeAdd",
@@ -18,7 +19,8 @@ export default () => {
             labelCol: { span: 10 },
             wrapperCol: { span: 12 },
             initialValues: {
-                layout: true,
+                // 当父节点有layout后子节点无需layout
+                layout: data.layout || true,
                 menu: true,
                 logined: true
             },
@@ -32,10 +34,7 @@ export default () => {
                             { required: true, message: "请输入页面路径" },
                             {
                                 validator: (_, val) => {
-                                    const res = getRouteByKeyOnTree(
-                                        val,
-                                        toJS(gStore.g_config.router)
-                                    );
+                                    const res = route.getRouteByKey(val);
                                     if (res) {
                                         return Promise.reject(`存在重复页面路径${val}`);
                                     }
@@ -54,13 +53,15 @@ export default () => {
                 [
                     {
                         name: "layout",
-                        label: "是否显示导航菜单",
+                        label: "页面类型",
                         type: "radio",
-                        rules: [{ required: true, message: "请选择是否显示导航菜单" }],
+                        rules: [{ required: true, message: "请选择页面类型" }],
                         props: {
+                            // layout 只能在父节点指定
+                            disabled: data.key != "root",
                             options: [
-                                { value: true, label: "是" },
-                                { value: false, label: "否" }
+                                { value: true, label: "后台型" },
+                                { value: false, label: "前台型" }
                             ]
                         }
                     },
@@ -105,14 +106,26 @@ export default () => {
             ),
             onOk: async () => {
                 const res = await form.routeAdd.validateFields();
-                const tree = pushChildRouteByKey(data.key, toJS(gStore.g_config.router), {
-                    ...res,
-                    title: res.name,
-                    key: res.path,
-                    path: /^\//.test(res.path) ? res.path : `/${res.path}`
-                });
+                if (data.key == "root") {
+                    route.pushChildRouteByKey({
+                        ...res,
+                        title: res.name,
+                        key: res.path,
+                        path: /^\//.test(res.path) ? res.path : `/${res.path}`
+                    });
+                } else {
+                    route.pushChildRouteByKey(
+                        {
+                            ...res,
+                            title: res.name,
+                            key: res.path,
+                            path: /^\//.test(res.path) ? res.path : `/${res.path}`
+                        },
+                        data.key
+                    );
+                }
                 runInAction(() => {
-                    gStore.g_config.router = tree.map(v => formatRoute(v));
+                    gStore.g_config.router = route.routes;
                     gStore.g_config.reouteTreeReloadKey = Math.random();
                 });
             }
@@ -131,20 +144,35 @@ export default () => {
                             style={{ width: "100%" }}
                             showLine={true}
                             showIcon={true}
-                            treeData={gStore.g_config.router}
+                            treeData={[
+                                {
+                                    title: "根目录",
+                                    key: "root",
+                                    path: "/",
+                                    children: [...gStore.g_config.router]
+                                }
+                            ]}
                             selectable={false}
                             defaultExpandAll={true}
                             titleRender={data => {
                                 return (
                                     <div className={style.row}>
-                                        <a href={`/#${data.fullPathName || "/"}`}>{data.title}</a>
+                                        {data.key == "root" ? (
+                                            data.title
+                                        ) : (
+                                            <a href={`/#${data.fullPathName || "/"}`}>
+                                                {data.title}
+                                            </a>
+                                        )}
                                         <div>
-                                            <span
-                                                className={style["plus"]}
-                                                onClick={() => addRoute(data)}
-                                            >
-                                                <PlusOutlined />
-                                            </span>
+                                            {(data.layout || data.key == "root") && (
+                                                <span
+                                                    className={style["plus"]}
+                                                    onClick={() => addRoute(data)}
+                                                >
+                                                    <PlusOutlined />
+                                                </span>
+                                            )}
                                             {data.key != "root" && (
                                                 <span
                                                     className={style["minus"]}

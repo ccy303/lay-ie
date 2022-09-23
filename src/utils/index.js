@@ -1,8 +1,6 @@
 import { matchPath } from "react-router-dom";
 import history from "history/browser";
 import BigNumber from "bignumber.js";
-import { copy } from "copy-anything";
-import { v5 as uuidv5 } from "uuid";
 
 /**
  * 检查权限
@@ -166,6 +164,7 @@ export const thousandBit = num => {
         });
     });
 };
+
 // 替换url 不刷新页面
 export const replaceUrl = (url, sync) => {
     if (sync) {
@@ -177,57 +176,3 @@ export const replaceUrl = (url, sync) => {
     }
 };
 
-// 根据key寻找route树节点
-export const getRouteByKeyOnTree = (key, tree) => {
-    let out = null;
-    for (let i = 0, len = tree.length; i < len; i++) {
-        if (tree[i].key == key) {
-            out = tree[i];
-            break;
-        } else if (tree[i].children) {
-            out = getRouteByKeyOnTree(key, tree[i].children);
-        }
-    }
-    return out;
-};
-
-// 向route tree 中 key 命中的路由添加子路由
-export const pushChildRouteByKey = (key, tree, childRoute) => {
-    let _tree = copy(tree);
-    for (let i = 0, len = _tree.length; i < len; i++) {
-        if (_tree[i].key == key) {
-            if (!_tree[i].children) {
-                _tree[i].children = [];
-            }
-            _tree[i].children.push(childRoute);
-            break;
-        } else if (_tree[i].children) {
-            _tree[i].children = pushChildRouteByKey(key, _tree[i].children, childRoute);
-        }
-    }
-    return _tree;
-};
-
-// 格式化路由
-export const formatRoute = (route, reset = { logined: false }) => {
-    const _route = {
-        breadcrumb: { breadcrumb: true, disabled: !route.component },
-        ...reset,
-        ...route,
-        fullPathName: `${reset.fullPathName || ""}${route.path}`,
-        routeId: uuidv5(`${route.title}${route.path}`, uuidv5.URL),
-        auths: Array.from(new Set([...(route.auths || []), ...(reset.auths || [])]))
-    };
-
-    if (_route.children) {
-        for (let i = 0; i < _route.children.length; i++) {
-            _route.children[i] = formatRoute(_route.children[i], {
-                logined: _route.logined || false,
-                fullPathName: _route.fullPathName,
-                auths: _route.auths
-            });
-        }
-    }
-
-    return _route;
-};

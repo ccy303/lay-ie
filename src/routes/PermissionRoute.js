@@ -1,20 +1,11 @@
 import React, { useEffect } from "react";
-import { appConfig } from "@root/appConfig";
-import routes from "./index.js";
+import RouteClass from "@utils/route";
 import gStore from "@src/store/global";
 import NoMatch from "@base/noMatch";
-import { checkAuth, getRouteByPath } from "@utils/index";
+import { checkAuth } from "@utils/index";
 import { useLocalStore, Observer } from "mobx-react-lite";
-import {
-    HashRouter,
-    Routes,
-    Route,
-    useNavigate,
-    Outlet,
-    useLocation,
-    Navigate
-} from "react-router-dom";
-import { runInAction } from "mobx";
+import { toJS } from "mobx";
+import { HashRouter, Routes, Route, Outlet, useLocation, Navigate } from "react-router-dom";
 
 import { useDrop } from "react-dnd";
 
@@ -43,7 +34,7 @@ const DropContainer = props => {
     );
 };
 
-const renderRoute = (routes, design) => {
+const renderRoute = routes => {
     return (
         <>
             {routes.map(route => {
@@ -59,13 +50,6 @@ const renderRoute = (routes, design) => {
                 let { path } = route;
                 path = path.replace(/\//, "");
                 const CheckAuth = () => {
-                    const location = useLocation();
-                    if (!design && logined && !gStore.g_userInfo) {
-                        return <Navigate to={`/login?redict_uri=${location.pathname}`} />;
-                    }
-                    if (!design && !checkAuth(route.auths, gStore.g_userAuth)) {
-                        return <Navigate to={`/403`} />;
-                    }
                     return (
                         <DropContainer>
                             <Component gStore={gStore} location={location} />
@@ -78,9 +62,7 @@ const renderRoute = (routes, design) => {
                         return (
                             <Route
                                 key={path}
-                                element={
-                                    <Layout design={design} targetRoute={route} gStore={gStore} />
-                                }
+                                element={<Layout targetRoute={route} gStore={gStore} />}
                             >
                                 <Route path={path} element={<CheckAuth />} />
                             </Route>
@@ -93,12 +75,10 @@ const renderRoute = (routes, design) => {
                             <Route
                                 key={path}
                                 path={path}
-                                element={
-                                    <Layout design={design} targetRoute={route} gStore={gStore} />
-                                }
+                                element={<Layout targetRoute={route} gStore={gStore} />}
                             >
                                 <Route index element={<NoMatch />} />
-                                {renderRoute(children, design)}
+                                {renderRoute(children)}
                                 <Route path='*' element={<NoMatch />} />
                             </Route>
                         );
@@ -106,7 +86,7 @@ const renderRoute = (routes, design) => {
                     return (
                         <Route key={path} path={path}>
                             <Route index element={<NoMatch />} />
-                            {renderRoute(children, design)}
+                            {renderRoute(children)}
                             <Route path='*' element={<NoMatch />} />
                         </Route>
                     );
@@ -117,70 +97,29 @@ const renderRoute = (routes, design) => {
 };
 
 const PermissionRoute = props => {
-    const { DESIGN = false } = props;
     return (
         <HashRouter>
-            <Routes>
-                <Route path='/' element={<Main DESIGN={DESIGN} />}>
-                    {renderRoute(routes, DESIGN)}
-                    <Route path='*' element={<NoMatch />} />
-                </Route>
-            </Routes>
+            <Observer>
+                {() => {
+                    const route = new RouteClass(gStore.g_config.router);
+                    route.initRouteAttribute();
+
+                    return (
+                        <Routes>
+                            <Route path='/' element={<Main />}>
+                                {renderRoute(route.initLayout())}
+                                <Route path='*' element={<NoMatch />} />
+                            </Route>
+                        </Routes>
+                    );
+                }}
+            </Observer>
         </HashRouter>
     );
 };
 
 const Main = props => {
-    const { DESIGN } = props;
-    const store = useLocalStore(() => ({
-        state: false
-    }));
-    const location = useLocation();
-    const navigate = useNavigate();
-    useEffect(() => {
-        (async () => {
-            try {
-                let uInfo = {};
-                if (!DESIGN) {
-                    uInfo = await appConfig.getUserFun();
-                    runInAction(() => {
-                        gStore.g_userInfo = uInfo.userInfo;
-                        gStore.g_userAuth = uInfo.auth;
-                    });
-                }
-                try {
-                    const res = await appConfig?.appWillMount({ ...uInfo });
-                    gStore.g_customData = res;
-                } catch (err) {
-                    throw new Error(err);
-                }
-                // (location.pathname === "/login" || location.pathname === "/") &&
-                //     navigate(appConfig.rootPath);
-                store.state = true;
-            } catch (err) {
-                store.state = true;
-                if (appConfig.getUserFunErr) {
-                    appConfig.getUserFunErr?.(err);
-                    return;
-                }
-                let flag = 0;
-                for (; flag < routes.length; flag++) {
-                    // 查找路由是否存在路由列表中,不存在重定向到登录
-                    const res = getRouteByPath(routes[flag], location.pathname);
-                    if (!res) {
-                        continue;
-                    } else {
-                        break;
-                    }
-                }
-                if (flag == routes.length) {
-                    navigate("/login");
-                }
-            }
-        })();
-    }, []);
-    // location.pathname === "/" && store.state && navigate(`${appConfig.rootPath}`);
-    return <Observer>{() => <>{store.state ? <Outlet /> : <></>}</>}</Observer>;
+    return <Outlet />;
 };
 
 export default PermissionRoute;
