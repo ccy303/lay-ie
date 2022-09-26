@@ -8,10 +8,7 @@ export default props => {
     useEffect(() => {
         (async () => {
             const Com = (await import("../home")).default;
-            console.log(Com);
             store.C = Com;
-            // console.log(123, C);
-            // serCom(C);
         })();
     }, []);
     return (

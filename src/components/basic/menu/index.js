@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useLocalStore, Observer } from "mobx-react-lite";
+import { useLocalStore, Observer, observer } from "mobx-react-lite";
 import { Menu } from "antd";
+import gStore from "@src/store/global.js";
 import routes from "@src/routes";
 import { checkAuth, getRouteByPath } from "@utils/index";
 import { AddRouter, pageEdit } from "../design";
@@ -19,7 +20,7 @@ const getOpenKeys = path => {
     return out;
 };
 
-const MenuCom = props => {
+const MenuCom = observer(props => {
     const { design } = props;
     const location = useLocation();
     const navigate = useNavigate();
@@ -92,64 +93,14 @@ const MenuCom = props => {
         store.openKeys = Array.from(new Set([...e]));
     };
 
-    const linkTo = to => {
-        navigate(to);
-    };
-
-    // const renderMenu = menus => {
-    //     return (
-    //         <>
-    //             {menus.map((item, i, arr) => {
-    //                 return item.children?.length ? (
-    //                     <SubMenu key={item.path} title={<span>{item.title}</span>}>
-    //                         {renderMenu(item.children)}
-    //                         {design && (
-    //                             <Menu.Item key={item.title}>
-    //                                 <a
-    //                                     className={style["add-router"]}
-    //                                     onClick={e => routeHandle(e, item.title)}
-    //                                 >
-    //                                     <PlusCircleTwoTone style={{ marginRight: "5px" }} />
-    //                                     添加路由
-    //                                 </a>
-    //                             </Menu.Item>
-    //                         )}
-    //                     </SubMenu>
-    //                 ) : (
-    //                     <Menu.Item key={item.path}>
-    //                         <a
-    //                             onClick={() => {
-    //                                 linkTo(item.path);
-    //                             }}
-    //                         >
-    //                             <span className={style["link"]}>
-    //                                 {item.title}
-    //                                 {design && (
-    //                                     <span
-    //                                         className={style["edit"]}
-    //                                         onClick={() => pageHandle(item.routeid)}
-    //                                     >
-    //                                         编辑
-    //                                     </span>
-    //                                 )}
-    //                             </span>
-    //                         </a>
-    //                     </Menu.Item>
-    //                 );
-    //             })}
-    //         </>
-    //     );
-    // };
-
     useEffect(() => {
-        store.menus = getMenu(routes);
+        store.menus = getMenu(gStore.g_config.router);
     }, []);
 
     return (
         <div className={style[`menu-${appConfig.sliderTheme || "light"}`]}>
             <Observer>
                 {() => {
-                    console.log(store.menus);
                     return (
                         <Menu
                             mode='inline'
@@ -165,22 +116,12 @@ const MenuCom = props => {
                             onOpenChange={onOpenChange}
                             id={appConfig.sliderTheme || "light"}
                             items={store.menus}
-                        >
-                            {/* {renderMenu(store.menus)}
-                            {design && (
-                                <Menu.Item key='root'>
-                                    <a onClick={e => routeHandle(e, "root")} className={style["add-router"]}>
-                                        <PlusCircleTwoTone style={{ marginRight: "5px" }} />
-                                        添加路由
-                                    </a>
-                                </Menu.Item>
-                            )} */}
-                        </Menu>
+                        />
                     );
                 }}
             </Observer>
         </div>
     );
-};
+});
 
 export default MenuCom;

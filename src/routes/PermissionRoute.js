@@ -9,12 +9,76 @@ import { HashRouter, Routes, Route, Outlet, useLocation, Navigate } from "react-
 
 import { useDrop } from "react-dnd";
 
+import load from "../components/basic/loadable";
+import Layout from "../components/basic/layout";
+
+const a = [
+    {
+        path: "/login",
+        title: "登录",
+        menu: false,
+        component: load(() => import("../components/business/login"))
+    },
+    {
+        path: "/home",
+        title: "首页",
+        menu: false,
+        component: load(() => import("../components/business/home"))
+    },
+    {
+        title: "工作台",
+        menu: false,
+        path: "/admin",
+        logined: true,
+        layout: Layout,
+        breadcrumb: false,
+        children: [
+            {
+                path: "/one",
+                title: "一级路由",
+                menu: true,
+                logined: true,
+                component: load(() => import("../components/business/pageIndex")),
+                breadcrumb: [
+                    {
+                        path: "",
+                        title: "空连接"
+                    },
+                    {
+                        path: "http://www.baidu.com",
+                        title: "禁用链接"
+                    },
+                    {
+                        path: "http://www.baidu.com",
+                        title: "外部链接-百度(新窗口打开)",
+                        target: "_block"
+                    },
+                    {
+                        path: "http://www.douyu.com",
+                        title: "外部链接-斗鱼"
+                    },
+                    {
+                        path: "/home",
+                        title: "内部链接"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        title: "403",
+        menu: false,
+        path: "/403",
+        layout: Layout,
+        component: load(() => import("../components/basic/noAuth"))
+    }
+];
+
 const DropContainer = props => {
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: "compoment",
         drop: () => ({ name: "test" }),
         collect: monitor => {
-            console.log(monitor);
             return {
                 isOver: monitor.isOver(),
                 canDrop: monitor.canDrop()
@@ -43,8 +107,7 @@ const renderRoute = routes => {
                     component: Component = () => {
                         return <></>;
                     },
-                    children,
-                    logined
+                    children
                 } = route;
 
                 let { path } = route;
@@ -56,9 +119,8 @@ const renderRoute = routes => {
                         </DropContainer>
                     );
                 };
-
                 if (!children) {
-                    if (Layout) {
+                    if (Layout && typeof Layout == "function") {
                         return (
                             <Route
                                 key={path}
@@ -70,7 +132,7 @@ const renderRoute = routes => {
                     }
                     return <Route key={path} path={path} element={<CheckAuth />} />;
                 } else {
-                    if (Layout) {
+                    if (Layout && typeof Layout == "function") {
                         return (
                             <Route
                                 key={path}
@@ -101,13 +163,14 @@ const PermissionRoute = props => {
         <HashRouter>
             <Observer>
                 {() => {
-                    const route = new RouteClass(gStore.g_config.router);
-                    route.initRouteAttribute();
-
+                    const route = new RouteClass(toJS(gStore.g_config.router))
+                        .initRouteAttribute()
+                        .initLayout()
+                        .initCompoment();
                     return (
-                        <Routes>
+                        <Routes key={gStore.reouteTreeReloadKey}>
                             <Route path='/' element={<Main />}>
-                                {renderRoute(route.initLayout())}
+                                {renderRoute(route.routes)}
                                 <Route path='*' element={<NoMatch />} />
                             </Route>
                         </Routes>

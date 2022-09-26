@@ -3,13 +3,17 @@ import { v5 as uuidv5 } from "uuid";
 import React from "react";
 import Layout from "../components/basic/layout";
 
+const DefaultCompoment = () => {
+    return <div>1234</div>;
+};
+
 class Route {
     constructor(routes) {
         this.routes = copy(routes);
     }
 
     // 初始话route属性
-    initRouteAttribute(reset = { logined: false }, route = this.routes) {
+    initRouteAttribute(reset = { logined: false }, route = this.routes, flag = true) {
         route = route.map(v => {
             const _route = {
                 breadcrumb: { breadcrumb: true, disabled: !route.component },
@@ -28,16 +32,22 @@ class Route {
                         fullPathName: _route.fullPathName,
                         auths: _route.auths
                     },
-                    _route.children
+                    _route.children,
+                    false
                 );
             }
             return _route;
         });
-        return route;
+        if (flag) {
+            this.routes = route;
+            return this;
+        } else {
+            return route;
+        }
     }
 
     // 向route tree 中 key 命中的路由添加子路由
-    pushChildRouteByKey(childRoute, key, routes = this.routes) {
+    pushChildRouteByKey(childRoute, key, routes = this.routes, flag = true) {
         if (!key) {
             routes.push(childRoute);
         } else {
@@ -52,12 +62,18 @@ class Route {
                     routes[i].children = this.pushChildRouteByKey(
                         childRoute,
                         key,
-                        routes[i].children
+                        routes[i].children,
+                        false
                     );
                 }
             }
         }
-        return routes;
+        if (flag) {
+            this.routes = routes;
+            return this;
+        } else {
+            return routes;
+        }
     }
 
     // 根据key寻找route树节点
@@ -83,7 +99,24 @@ class Route {
             }
             return v;
         });
-        return this.routes;
+        return this;
+    }
+
+    // 初始化路由组件
+    initCompoment(route = this.routes, flag = true) {
+        route = route.map(v => {
+            if (v.children) {
+                v.children = this.initCompoment(v.children, false);
+            } else {
+                v.component = DefaultCompoment;
+            }
+            return v;
+        });
+        if (flag) {
+            return this;
+        } else {
+            return route;
+        }
     }
 }
 

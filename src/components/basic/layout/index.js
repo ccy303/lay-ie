@@ -40,7 +40,6 @@ const SpinC = observer(() => {
 
 const LayoutUI = props => {
     const { targetRoute, gStore } = props;
-    const { g_userInfo, g_loading } = gStore;
     const store = useLocalStore(() => ({
         breadcrumb: []
     }));

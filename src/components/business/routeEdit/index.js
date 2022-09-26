@@ -124,6 +124,7 @@ export default () => {
                         data.key
                     );
                 }
+                route.initRouteAttribute();
                 runInAction(() => {
                     gStore.g_config.router = route.routes;
                     gStore.g_config.reouteTreeReloadKey = Math.random();
@@ -157,7 +158,7 @@ export default () => {
                             titleRender={data => {
                                 return (
                                     <div className={style.row}>
-                                        {data.key == "root" ? (
+                                        {data.key == "root" || data.children?.length ? (
                                             data.title
                                         ) : (
                                             <a href={`/#${data.fullPathName || "/"}`}>
